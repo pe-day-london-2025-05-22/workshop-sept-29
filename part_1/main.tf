@@ -187,6 +187,10 @@ resource "platform-orchestrator_environment_type" "development" {
     id = "development"
 }
 
+resource "platform-orchestrator_environment_type" "staging" {
+    id = "staging"
+}
+
 resource "platform-orchestrator_environment_type" "production" {
     id = "production"
 }
@@ -195,16 +199,7 @@ resource "platform-orchestrator_project" "workshop" {
     id = "workshop"
 }
 
-// TODO: update to restrict to project
 resource "platform-orchestrator_runner_rule" "default" {
     runner_id = platform-orchestrator_kubernetes_runner.default.id
-}
-
-// TODO: move to next part
-resource "platform-orchestrator_environment" "dev" {
-    id = "dev"
     project_id = platform-orchestrator_project.workshop.id
-    env_type_id = platform-orchestrator_environment_type.development.id
-
-    depends_on = [platform-orchestrator_runner_rule.default]
 }
