@@ -2,9 +2,11 @@ terraform {
     required_providers {
         platform-orchestrator = {
             source = "humanitec/platform-orchestrator"
+            version = "2.6.1"
         }
         kubernetes = {
             source = "hashicorp/kubernetes"
+            version = "2.38.0"
         }
     }
 }
@@ -36,6 +38,7 @@ provider "platform-orchestrator" {
 }
 
 provider "kubernetes" {
+    config_path = "~/.kube/config"
 }
 
 locals {
