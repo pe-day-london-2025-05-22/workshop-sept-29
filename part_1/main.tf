@@ -16,11 +16,19 @@ variable "humanitec_org_id" {
 variable "humanitec_project_id" {
     type = string
    default = "workshop"
+    description = "Project ids have to be unique, if there is already a project with this ID and it can't be deleted or used, you can use this to use a new project ID"
 }
 
 variable "humanitec_runner_id" {
     type = string
     default = "workshop"
+    description = "Runner ids have to be unique, if there is already a runner with this ID and it can't be deleted or used, you can use this to use a new runner ID"
+}
+
+variable "humanitec_environment_type_prefix" {
+    type = string
+    default = ""
+    description = "ET ids have to be unique, if the existing ETs cannot be deleted, you can use this to create a new set of ET ids."
 }
 
 provider "platform-orchestrator" {
@@ -194,15 +202,15 @@ resource "platform-orchestrator_kubernetes_agent_runner" "workshop" {
 }
 
 resource "platform-orchestrator_environment_type" "development" {
-    id = "development"
+    id = "${var.humanitec_environment_type_prefix}development"
 }
 
 resource "platform-orchestrator_environment_type" "staging" {
-    id = "staging"
+    id = "${var.humanitec_environment_type_prefix}staging"
 }
 
 resource "platform-orchestrator_environment_type" "production" {
-    id = "production"
+    id = "${var.humanitec_environment_type_prefix}production"
 }
 
 resource "platform-orchestrator_project" "workshop" {
