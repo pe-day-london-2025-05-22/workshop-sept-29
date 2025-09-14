@@ -229,3 +229,11 @@ resource "platform-orchestrator_kubernetes_agent_runner" "workshop" {
         }
     }
 }
+
+output "runner_url" {
+    value = "https://console.humanitec.dev/orgs/${var.humanitec_org_id}/runners/${platform-orchestrator_kubernetes_agent_runner.workshop.id}/configuration"
+}
+
+output "kubernetes_runner_service_account" {
+    value = "${kubernetes_namespace.po.metadata[0].name}/${kubernetes_service_account.runner.metadata[0].name}"
+}
