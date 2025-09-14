@@ -91,6 +91,7 @@ resource "platform-orchestrator_resource_type" "k8s-service-account" {
 
 resource "platform-orchestrator_module" "k8s-score-workload" {
     id = "k8s-score-workload${var.humanitec_id_suffix}"
+    resource_type = platform-orchestrator_resource_type.score-workload.id
     description = "Deploy a Score Workload onto a kubernetes cluster"
     module_source = "git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/score-workload/kubernetes"
     module_params = {
@@ -112,9 +113,9 @@ resource "platform-orchestrator_module" "k8s-score-workload" {
         }
         acc = {
             type = "k8s-service-account"
-            params = {
+            params = jsonencode({
                 namespace = "$${resources.ns.outputs.name}"
-            }
+            })
         }
     }
     module_inputs = jsonencode({
@@ -125,12 +126,14 @@ resource "platform-orchestrator_module" "k8s-score-workload" {
 
 resource "platform-orchestrator_module" "k8s-namespace" {
     id = "k8s-namespace${var.humanitec_id_suffix}"
+    resource_type = platform-orchestrator_resource_type.k8s-namespace.id
     description = "Provision a Kubernetes namespace onto the kubernetes cluster"
     module_source = "git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/k8s-namespace/new"
 }
 
 resource "platform-orchestrator_module" "k8s-service-account" {
     id = "k8s-service-account${var.humanitec_id_suffix}"
+    resource_type = platform-orchestrator_resource_type.k8s-service-account.id
     description = "Provision a Kubernetes service account onto the kubernetes cluster in the given namespace"
     module_source = "git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/k8s-service-account/new"
     module_params = {
