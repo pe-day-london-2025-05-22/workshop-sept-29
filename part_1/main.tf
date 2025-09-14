@@ -25,7 +25,7 @@ variable "humanitec_org_id" {
 
 variable "humanitec_project_id" {
     type = string
-   default = "workshop"
+    default = "workshop"
     description = "Project ids have to be unique, if there is already a project with this ID and it can't be deleted or used, you can use this to use a new project ID"
 }
 
