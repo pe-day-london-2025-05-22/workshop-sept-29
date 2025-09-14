@@ -4,7 +4,7 @@ terraform {
             source = "humanitec/platform-orchestrator"
         }
         kubernetes = {
-            source = "hashcircorp/kubernetes"
+            source = "hashicorp/kubernetes"
         }
     }
 }
@@ -59,7 +59,7 @@ resource "kubernetes_role" "agent" {
         namespace = kubernetes_namespace.po.metadata.name
     }
     rule {
-        apiGroups = ["batch"]
+        api_groups = ["batch"]
         resources = ["jobs"]
         verbs = ["create", "get", "list", "watch", "delete"]
     }
@@ -148,12 +148,12 @@ resource "kubernetes_role" "runner" {
         namespace = kubernetes_namespace.po.metadata.name
     }
     rule {
-        apiGroups = [""]
+        api_groups = [""]
         resources = ["secrets"]
         verbs = ["create", "get", "list", "watch", "delete"]
     }
     rule {
-        apiGroups = ["coordination.k8s.io"]
+        api_groups = ["coordination.k8s.io"]
         resources = ["leases"]
         verbs = ["create", "get", "update"]
     }
