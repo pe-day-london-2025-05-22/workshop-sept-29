@@ -108,11 +108,11 @@ resource "platform-orchestrator_module" "k8s-score-workload" {
     }
     dependencies = {
         ns = {
-            type = "k8s-namespace"
+            type = platform-orchestrator_resource_type.k8s-namespace.id
             id = "shared-k8s-namespace"
         }
         acc = {
-            type = "k8s-service-account"
+            type = platform-orchestrator_resource_type.k8s-service-account.id
             params = jsonencode({
                 namespace = "$${resources.ns.outputs.name}"
             })
@@ -122,6 +122,8 @@ resource "platform-orchestrator_module" "k8s-score-workload" {
         namespace = "$${resources.ns.outputs.name}"
         service_account_name = "$${resources.acc.outputs.name}"
     })
+
+    depends_on = [ platform-orchestrator_resource_type.k8s-namespace, platform-orchestrator_resource_type.k8s-service-account ]
 }
 
 resource "platform-orchestrator_module" "k8s-namespace" {
