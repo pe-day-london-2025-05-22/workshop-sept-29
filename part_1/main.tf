@@ -1,27 +1,36 @@
 terraform {
-  required_providers {
-    platform-orchestrator = {
-        source = "humanitec/platform-orchestrator"
+    required_providers {
+        platform-orchestrator = {
+            source = "humanitec/platform-orchestrator"
+        }
+        kubernetes = {
+            source = "hashcircorp/kubernetes"
+        }
     }
-    kubernetes = {
-        source = "hashcircorp/kubernetes"
-    }
-  }
 }
 
-variable "HUMANITEC_ORG_ID" {
-  type = string
+variable "humanitec_org_id" {
+    type = string
+}
+
+variable "humanitec_project_id" {
+    type = string
+   default = "workshop"
+}
+
+variable "humanitec_runner_id" {
+    type = string
+    default = "workshop"
 }
 
 provider "platform-orchestrator" {
-    org_id = var.HUMANITEC_ORG_ID
+    org_id = var.humanitec_org_id
 }
 
 provider "kubernetes" {
 }
 
 locals {
-    runner_id = "workshop"
     match_labels = {
         app = "humanitec-agent"
     }
@@ -101,15 +110,15 @@ resource "kubernetes_deployment" "agent" {
                 service_account_name = kubernetes_service_account.agent.metadata.name
                 container {
                     name = "agent"
-                    image = "ghcr.io/humanitec/canyon-runner:v1.6.0"
+                    image = "ghcr.io/humanitec/canyon-runner:v1.7.1"
                     args = ["remote"]
                     env {
                         name = "ORG_ID"
-                        value = var.HUMANITEC_ORG_ID
+                        value = var.humanitec_org_id
                     }
                     env {
                         name = "RUNNER_ID"
-                        value = local.runner_id
+                        value = var.humanitec_runner_id
                     }
                     env {
                         name = "PRIVATE_KEY"
@@ -168,7 +177,7 @@ resource "kubernetes_role_binding" "runner" {
 }
 
 resource "platform-orchestrator_kubernetes_agent_runner" "workshop" {
-    id = local.runner_id
+    id = var.humanitec_runner_id
     runner_configuration = {
         key = tls_private_key.runner.public_key_pem
         job = {
@@ -197,7 +206,7 @@ resource "platform-orchestrator_environment_type" "production" {
 }
 
 resource "platform-orchestrator_project" "workshop" {
-    id = "workshop"
+    id = var.humanitec_project_id
 }
 
 resource "platform-orchestrator_runner_rule" "default" {
