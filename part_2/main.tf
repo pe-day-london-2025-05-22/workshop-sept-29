@@ -109,7 +109,7 @@ resource "platform-orchestrator_module" "k8s-score-workload" {
     dependencies = {
         ns = {
             type = "k8s-namespace"
-            id = "shared.k8s-namespace"
+            id = "shared-k8s-namespace"
         }
         acc = {
             type = "k8s-service-account"
