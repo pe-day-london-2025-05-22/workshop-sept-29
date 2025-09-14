@@ -20,6 +20,13 @@ provider "platform-orchestrator" {
 provider "kubernetes" {
 }
 
+locals {
+    runner_id = "workshop"
+    match_labels = {
+        app = "humanitec-agent"
+    }
+}
+
 resource "tls_private_key" "runner" {
   algorithm = "ED25519"
 }
@@ -76,12 +83,6 @@ resource "kubernetes_secret" "agent-private-key" {
     }
 }
 
-locals {
-    match_labels = {
-        app = "humanitec-agent"
-    }
-}
-
 resource "kubernetes_deployment" "agent" {
     metadata {
         name = "agent"
@@ -108,7 +109,7 @@ resource "kubernetes_deployment" "agent" {
                     }
                     env {
                         name = "RUNNER_ID"
-                        value = "workshop"
+                        value = local.runner_id
                     }
                     env {
                         name = "PRIVATE_KEY"
@@ -167,7 +168,7 @@ resource "kubernetes_role_binding" "runner" {
 }
 
 resource "platform-orchestrator_kubernetes_agent_runner" "workshop" {
-    id = "workshop"
+    id = local.runner_id
     runner_configuration = {
         key = tls_private_key.runner.public_key_pem
         job = {
