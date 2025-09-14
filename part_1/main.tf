@@ -49,14 +49,14 @@ resource "kubernetes_namespace" "po" {
 resource "kubernetes_service_account" "agent" {
     metadata {
         name = "agent"
-        namespace = kubernetes_namespace.po.metadata.name
+        namespace = kubernetes_namespace.po.metadata[0].name
     }
 }
 
 resource "kubernetes_role" "agent" {
     metadata {
         name = "agent"
-        namespace = kubernetes_namespace.po.metadata.name
+        namespace = kubernetes_namespace.po.metadata[0].name
     }
     rule {
         api_groups = ["batch"]
@@ -67,25 +67,25 @@ resource "kubernetes_role" "agent" {
 
 resource "kubernetes_role_binding" "agent" {
     metadata {
-        name = "${kubernetes_service_account.agent.metadata.name}-${kubernetes_role.agent.metadata.name}"
-        namespace = kubernetes_namespace.po.metadata.name
+        name = "${kubernetes_service_account.agent.metadata[0].name}-${kubernetes_role.agent.metadata[0].name}"
+        namespace = kubernetes_namespace.po.metadata[0].name
     }
     subject {
         kind = "ServiceAccount"
-        name = kubernetes_service_account.agent.metadata.name
-        namespace = kubernetes_namespace.po.metadata.name
+        name = kubernetes_service_account.agent.metadata[0].name
+        namespace = kubernetes_namespace.po.metadata[0].name
     }
     role_ref {
         api_group = "rbac.authorization.k8s.io"
         kind = "Role"
-        name = kubernetes_role.agent.metadata.name
+        name = kubernetes_role.agent.metadata[0].name
     }
 }
 
 resource "kubernetes_secret" "agent-private-key" {
     metadata {
         name = "agent-private-key"
-        namespace = kubernetes_namespace.po.metadata.name
+        namespace = kubernetes_namespace.po.metadata[0].name
     }
     data = {
         key = tls_private_key.runner.private_key_pem
@@ -95,7 +95,7 @@ resource "kubernetes_secret" "agent-private-key" {
 resource "kubernetes_deployment" "agent" {
     metadata {
         name = "agent"
-        namespace = kubernetes_namespace.po.metadata.name
+        namespace = kubernetes_namespace.po.metadata[0].name
     }
     spec {
         replicas = 1
@@ -107,7 +107,7 @@ resource "kubernetes_deployment" "agent" {
                 labels = local.match_labels
             }
             spec {
-                service_account_name = kubernetes_service_account.agent.metadata.name
+                service_account_name = kubernetes_service_account.agent.metadata[0].name
                 container {
                     name = "agent"
                     image = "ghcr.io/humanitec/canyon-runner:v1.7.1"
@@ -124,7 +124,7 @@ resource "kubernetes_deployment" "agent" {
                         name = "PRIVATE_KEY"
                         value_from {
                             secret_key_ref {
-                                name = kubernetes_secret.agent-private-key.metadata.name
+                                name = kubernetes_secret.agent-private-key.metadata[0].name
                                 key = "key"
                             }
                         }
@@ -138,14 +138,14 @@ resource "kubernetes_deployment" "agent" {
 resource "kubernetes_service_account" "runner" {
     metadata {
         name = "runner"
-        namespace = kubernetes_namespace.po.metadata.name
+        namespace = kubernetes_namespace.po.metadata[0].name
     }
 }
 
 resource "kubernetes_role" "runner" {
     metadata {
         name = "runner"
-        namespace = kubernetes_namespace.po.metadata.name
+        namespace = kubernetes_namespace.po.metadata[0].name
     }
     rule {
         api_groups = [""]
@@ -161,18 +161,18 @@ resource "kubernetes_role" "runner" {
 
 resource "kubernetes_role_binding" "runner" {
     metadata {
-        name = "${kubernetes_service_account.runner.metadata.name}-${kubernetes_role.runner.metadata.name}"
-        namespace = kubernetes_namespace.po.metadata.name
+        name = "${kubernetes_service_account.runner.metadata[0].name}-${kubernetes_role.runner.metadata[0].name}"
+        namespace = kubernetes_namespace.po.metadata[0].name
     }
     subject {
         kind = "ServiceAccount"
-        name = kubernetes_service_account.runner.metadata.name
-        namespace = kubernetes_namespace.po.metadata.name
+        name = kubernetes_service_account.runner.metadata[0].name
+        namespace = kubernetes_namespace.po.metadata[0].name
     }
     role_ref {
         api_group = "rbac.authorization.k8s.io"
         kind = "Role"
-        name = kubernetes_role.runner.metadata.name
+        name = kubernetes_role.runner.metadata[0].name
     }
 }
 
@@ -181,14 +181,14 @@ resource "platform-orchestrator_kubernetes_agent_runner" "workshop" {
     runner_configuration = {
         key = tls_private_key.runner.public_key_pem
         job = {
-            namespace = kubernetes_namespace.po.metadata.name
-            service_account = kubernetes_service_account.runner.metadata.name
+            namespace = kubernetes_namespace.po.metadata[0].name
+            service_account = kubernetes_service_account.runner.metadata[0].name
         }
     }
     state_storage_configuration = {
         type = "kubernetes"
         kubernetes_configuration = {
-            namespace = kubernetes_namespace.po.metadata.name
+            namespace = kubernetes_namespace.po.metadata[0].name
         }
     }
 }
@@ -210,6 +210,6 @@ resource "platform-orchestrator_project" "workshop" {
 }
 
 resource "platform-orchestrator_runner_rule" "default" {
-    runner_id = platform-orchestrator_kubernetes_runner.default.id
+    runner_id = platform-orchestrator_kubernetes_agent_runner.workshop.id
     project_id = platform-orchestrator_project.workshop.id
 }
