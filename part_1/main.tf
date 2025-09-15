@@ -228,6 +228,11 @@ resource "kubernetes_cluster_role" "runner" {
         resources = ["nodes"]
         verbs = ["get", "list"]
     }
+    rule {
+        api_groups = [""]
+        resources  = ["namespaces"]
+        verbs      = ["create", "update", "get", "list", "watch", "delete"]
+    }
 }
 
 resource "kubernetes_cluster_role_binding" "runner" {
