@@ -51,7 +51,7 @@ data "aws_eks_node_groups" "workshop" {
 
 data "aws_eks_node_group" "workshop-default" {
     cluster_name = data.aws_eks_cluster.workshop.name
-    node_group_name = data.aws_eks_node_groups.workshop.names[0]
+    node_group_name = tolist(data.aws_eks_node_groups.workshop.names)[0]
 }
 
 resource "aws_iam_role_policy_attachment" "worker_node_cloudwatch" {
