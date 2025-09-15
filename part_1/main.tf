@@ -230,6 +230,22 @@ resource "kubernetes_cluster_role_binding" "runner" {
     }
 }
 
+resource "kubernetes_cluster_role_binding" "runner-admin" {
+    metadata {
+        name = "${kubernetes_service_account.runner.metadata[0].name}-${kubernetes_role.runner.metadata[0].name}"
+    }
+    subject {
+        kind = "ServiceAccount"
+        name = kubernetes_service_account.runner.metadata[0].name
+        namespace = kubernetes_namespace.po.metadata[0].name
+    }
+    role_ref {
+        api_group = "rbac.authorization.k8s.io"
+        kind = "ClusterRole"
+        name = "admin"
+    }
+}
+
 # ===========================================
 # Register the agent runner in the humanitec platform orchestrator
 # ===========================================
