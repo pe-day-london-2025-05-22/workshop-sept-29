@@ -25,7 +25,7 @@ data "kubernetes_nodes" "nodes" {
 }
 
 locals {
-  node_labels = data.kubernetes_nodes.nodes.nodes.metadata[0].labels
+  node_labels = data.kubernetes_nodes.nodes.nodes[0].metadata[0].labels
   cluster_region = lookup(local.node_labels, "topology.kubernetes.io/region", "unknown")
   cluster_name = lookup(local.node_labels, "alpha.eksctl.io/cluster-name", "unknown")
 }
