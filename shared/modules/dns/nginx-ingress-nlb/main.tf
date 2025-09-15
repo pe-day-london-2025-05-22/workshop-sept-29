@@ -26,6 +26,7 @@ output "hostname" {
 
 output "humanitec_metadata" {
   value = {
+    "Web-Url": "http://${data.kubernetes_service.ingress-nginx.status[0].load_balancer[0].ingress[0].hostname}"
     "Console-Url": "https://${local.nlb_region}.console.aws.amazon.com/ec2/home?region=${local.nlb_region}#LoadBalancers:name=${local.nlb_name}"
   }
 }
