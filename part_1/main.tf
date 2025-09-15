@@ -203,6 +203,22 @@ resource "kubernetes_role_binding" "runner" {
     }
 }
 
+resource "kubernetes_cluster_role_binding" "runner-admin" {
+    metadata {
+        name = "${kubernetes_service_account.runner.metadata[0].name}-${kubernetes_role.runner.metadata[0].name}-admin"
+    }
+    subject {
+        kind = "ServiceAccount"
+        name = kubernetes_service_account.runner.metadata[0].name
+        namespace = kubernetes_namespace.po.metadata[0].name
+    }
+    role_ref {
+        api_group = "rbac.authorization.k8s.io"
+        kind = "ClusterRole"
+        name = "admin"
+    }
+}
+
 resource "kubernetes_cluster_role" "runner" {
     metadata {
         name = "runner"
@@ -216,7 +232,7 @@ resource "kubernetes_cluster_role" "runner" {
 
 resource "kubernetes_cluster_role_binding" "runner" {
     metadata {
-        name = "${kubernetes_service_account.runner.metadata[0].name}-${kubernetes_role.runner.metadata[0].name}"
+        name = "${kubernetes_service_account.runner.metadata[0].name}-${kubernetes_role.runner.metadata[0].name}-custom"
     }
     subject {
         kind = "ServiceAccount"
@@ -227,22 +243,6 @@ resource "kubernetes_cluster_role_binding" "runner" {
         api_group = "rbac.authorization.k8s.io"
         kind = "ClusterRole"
         name = kubernetes_cluster_role.runner.metadata[0].name
-    }
-}
-
-resource "kubernetes_cluster_role_binding" "runner-admin" {
-    metadata {
-        name = "${kubernetes_service_account.runner.metadata[0].name}-${kubernetes_role.runner.metadata[0].name}"
-    }
-    subject {
-        kind = "ServiceAccount"
-        name = kubernetes_service_account.runner.metadata[0].name
-        namespace = kubernetes_namespace.po.metadata[0].name
-    }
-    role_ref {
-        api_group = "rbac.authorization.k8s.io"
-        kind = "ClusterRole"
-        name = "admin"
     }
 }
 
