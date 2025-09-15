@@ -2,7 +2,11 @@ terraform {
     required_providers {
         helm = {
             source = "hashicorp/helm"
-            version = "3.0.2"
+            version = "~> 3.0"
+        }
+        aws = {
+            source = "hashicorp/aws"
+            version = "~> 6.0"
         }
     }
 }
@@ -11,6 +15,9 @@ provider "helm" {
     kubernetes = {
         config_path = "~/.kube/config"
     }
+}
+
+provider "aws" {
 }
 
 resource "helm_release" "ingress" {
@@ -31,4 +38,28 @@ resource "helm_release" "ingress" {
             value = "internet-facing"
         }
     ]
+}
+
+
+data "aws_eks_cluster" "workshop" {
+    name = "eks-workshop"
+}
+
+data "aws_eks_node_groups" "workshop" {
+    cluster_name = data.aws_eks_cluster.workshop.name
+}
+
+data "aws_eks_node_group" "workshop-default" {
+    cluster_name = data.aws_eks_cluster.workshop.name
+    node_group_name = data.aws_eks_node_groups.workshop.names[0]
+}
+
+resource "aws_iam_role_policy_attachment" "worker_node_cloudwatch" {
+    role       = data.aws_eks_node_group.workshop-default.node_role_arn
+    policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
+resource "aws_eks_addon" "cloudwatch" {
+    cluster_name = data.aws_eks_cluster.workshop.name
+    addon_name = "amazon-cloudwatch-observability"
 }
