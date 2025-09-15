@@ -37,6 +37,6 @@ output "name" {
 output "humanitec_metadata" {
   value = {
     "Console-Url": "https://${local.cluster_region}.console.aws.amazon.com/eks/clusters/${local.cluster_name}?region=${local.cluster_region}"
-    "Name": kubernetes_namespace.ns.metadata[0].name
+    "Namespace-Name": kubernetes_namespace.ns.metadata[0].name
   }
 }

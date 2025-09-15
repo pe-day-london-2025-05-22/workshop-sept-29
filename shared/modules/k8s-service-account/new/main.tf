@@ -32,6 +32,6 @@ output "name" {
 
 output "humanitec_metadata" {
   value = {
-    "Name": kubernetes_service_account.sa.metadata[0].name
+    "Service-Account-Name": kubernetes_service_account.sa.metadata[0].name
   }
 }
