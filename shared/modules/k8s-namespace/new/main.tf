@@ -15,28 +15,28 @@ resource "random_id" "r" {
     byte_length = 5
 }
 
-resource "kubernetes_namespace" "ns" {
+resource "kubernetes_namespace_v1" "ns" {
     metadata {
         name = "env-${random_id.r.hex}"
     }
 }
 
-data "kubernetes_nodes" "nodes" {
+data "kubernetes_nodes_v1" "nodes" {
 }
 
 locals {
-  node_labels = data.kubernetes_nodes.nodes.nodes[0].metadata[0].labels
+  node_labels = data.kubernetes_nodes_v1.nodes.nodes[0].metadata[0].labels
   cluster_region = lookup(local.node_labels, "topology.kubernetes.io/region", "unknown")
   cluster_name = lookup(local.node_labels, "alpha.eksctl.io/cluster-name", "unknown")
 }
 
 output "name" {
-    value = kubernetes_namespace.ns.metadata[0].name
+    value = kubernetes_namespace_v1.ns.metadata[0].name
 }
 
 output "humanitec_metadata" {
   value = {
     "Console-Url": "https://${local.cluster_region}.console.aws.amazon.com/eks/clusters/${local.cluster_name}?region=${local.cluster_region}"
-    "Namespace-Name": kubernetes_namespace.ns.metadata[0].name
+    "Kubernetes-Namespace": kubernetes_namespace_v1.ns.metadata[0].name
   }
 }

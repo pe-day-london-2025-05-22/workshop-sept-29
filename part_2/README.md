@@ -61,3 +61,31 @@ EOF
 ```sh
 hctl create module-rule --set=module_id=dns-ingress  --set=project_id=workshop
 ```
+
+
+```
+...
+resources:
+  route:
+    type: route
+    params:
+      hostname: ${resources.dns.hostname}
+      path_prefix: / 
+      port: 80
+```
+
+```sh
+hctl create resource-type route --set-yaml=- <<"EOF"
+description: "A route between a dns name and a service port"
+output_schema:
+  type: object
+  additional_properties: true
+EOF
+```
+
+```sh
+hctl create module k8s-score-route --set-yaml=- <<"EOF"
+resource_type: route
+module_source: git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/route/echo
+EOF
+```

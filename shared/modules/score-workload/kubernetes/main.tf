@@ -73,7 +73,7 @@ locals {
 }
 
 
-resource "kubernetes_secret" "env" {
+resource "kubernetes_secret_v1" "env" {
   for_each = nonsensitive(toset([for k, v in var.containers: k if v.variables != null]))
 
   metadata {
@@ -85,7 +85,7 @@ resource "kubernetes_secret" "env" {
   data = var.containers[each.value].variables
 }
 
-resource "kubernetes_secret" "files" {
+resource "kubernetes_secret_v1" "files" {
   for_each = nonsensitive(toset(keys(local.all_files_with_content)))
 
   metadata {
@@ -103,7 +103,7 @@ resource "kubernetes_secret" "files" {
   }
 }
 
-resource "kubernetes_deployment" "default" {
+resource "kubernetes_deployment_v1" "default" {
   count = local.workload_type == "Deployment" ? 1 : 0
 
   metadata {
@@ -274,7 +274,7 @@ resource "kubernetes_deployment" "default" {
   }
 }
 
-resource "kubernetes_service" "default" {
+resource "kubernetes_service_v1" "default" {
   count = local.create_service ? 1 : 0
 
   metadata {
@@ -300,7 +300,7 @@ resource "kubernetes_service" "default" {
   }
 }
 
-resource "kubernetes_stateful_set" "default" {
+resource "kubernetes_stateful_set_v1" "default" {
   count = local.workload_type == "StatefulSet" ? 1 : 0
 
   metadata {

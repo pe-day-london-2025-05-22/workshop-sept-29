@@ -19,7 +19,7 @@ resource "random_id" "r" {
     byte_length = 5
 }
 
-resource "kubernetes_service_account" "sa" {
+resource "kubernetes_service_account_v1" "sa" {
     metadata {
         name = "sa-${random_id.r.hex}"
         namespace = var.namespace
@@ -27,11 +27,12 @@ resource "kubernetes_service_account" "sa" {
 }
 
 output "name" {
-    value = kubernetes_service_account.sa.metadata[0].name
+    value = kubernetes_service_account_v1.sa.metadata[0].name
 }
 
 output "humanitec_metadata" {
   value = {
-    "Service-Account-Name": kubernetes_service_account.sa.metadata[0].name
+    "Kubernetes-Service-Account": kubernetes_service_account_v1.sa.metadata[0].name
+    "Kubernetes-Namespace": var.namespace
   }
 }
