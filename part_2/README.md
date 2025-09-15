@@ -32,3 +32,32 @@ resources:
   dns:
     type: dns
 ```
+
+```
+Creating deploy deployment...
+Error: request is invalid: graph contains 1 errors:
+        type=dns,class=default,id=workloads.simple.dns: no module definition matches this resource
+```
+
+```sh
+hctl create resource-type dns --set-yaml=- <<"EOF"
+description: "A dns name"
+output_schema:
+  type: object
+  properties:
+    hostname: {"type": "string"}
+EOF
+```
+
+```sh
+hctl create module dns-ingress --set-yaml=- <<"EOF"
+resource_type: dns
+module_source: git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/dns/nginx-ingress-nlb
+provider_mapping:
+  kubernetes: kubernetes.default
+EOF
+```
+
+```sh
+hctl create module-rule --set=module_id=dns-ingress  --set=project_id=workshop
+```

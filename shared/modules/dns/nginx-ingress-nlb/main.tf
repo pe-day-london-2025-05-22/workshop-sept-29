@@ -16,8 +16,8 @@ data "kubernetes_service" "ingress-nginx" {
 
 locals {
     hostname = data.kubernetes_service.ingress-nginx.status[0].load_balancer[0].ingress[0].hostname
-    nlb_region = split(".", hostname)[2]
-    nlb_name = split("-", hostname)[0]
+    nlb_region = split(".", local.hostname)[2]
+    nlb_name = split("-", local.hostname)[0]
 }
 
 output "hostname" {
