@@ -1,0 +1,11 @@
+apiVersion: score.dev/v1b1
+metadata:
+  name: simple
+containers:
+  main:
+    image: nginx:latest
+service:
+  ports:
+    web:
+      port: 80
+      targetPort: 80

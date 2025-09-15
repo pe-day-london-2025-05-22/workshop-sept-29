@@ -1,5 +1,4 @@
-# Part 1 - README
-
+# Part 1 - Connecting a Runner
 
 1. Go to <https://console.humanitec.dev> and register for an account and free org
 2. Setup the hctl CLI <https://developer.humanitec.com/platform-orchestrator/docs/integrations/cli/>
