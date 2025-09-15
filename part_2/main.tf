@@ -86,6 +86,8 @@ resource "platform-orchestrator_resource_type" "k8s-service-account" {
 resource "platform-orchestrator_provider" "k8s" {
     provider_type = "kubernetes"
     id = "default${var.humanitec_id_suffix}"
+    source = "hashicorp/kubernetes"
+    version_constraint = "~> 2.0"
     configuration = jsonencode({})
 }
 
