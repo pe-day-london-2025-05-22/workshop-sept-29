@@ -55,7 +55,7 @@ data "aws_eks_node_group" "workshop-default" {
 }
 
 resource "aws_iam_role_policy_attachment" "worker_node_cloudwatch" {
-    role       = data.aws_eks_node_group.workshop-default.node_role_arn
+    role       = split("/", data.aws_eks_node_group.workshop-default.node_role_arn)[0]
     policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
