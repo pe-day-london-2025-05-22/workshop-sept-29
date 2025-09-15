@@ -26,6 +26,7 @@ resource "helm_release" "ingress" {
     version = "4.13.2"
     repository = "https://kubernetes.github.io/ingress-nginx"
     namespace = "ingress-nginx"
+    create_namespace = true
     set = [
         {
             name = "controller.service.type"
