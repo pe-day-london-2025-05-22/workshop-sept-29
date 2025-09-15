@@ -6,11 +6,11 @@ terraform {
     required_providers {
         platform-orchestrator = {
             source = "humanitec/platform-orchestrator"
-            version = "2.6.1"
+            version = "~> 2.0"
         }
         kubernetes = {
             source = "hashicorp/kubernetes"
-            version = "2.38.0"
+            version = "~> 2.0"
         }
     }
 }
@@ -21,12 +21,6 @@ terraform {
 
 variable "humanitec_org_id" {
     type = string
-}
-
-variable "humanitec_project_id" {
-    type = string
-    default = "workshop"
-    description = "Project ids have to be unique, if there is already a project with this ID and it can't be deleted or used, you can use this to use a new project ID"
 }
 
 variable "humanitec_id_suffix" {
