@@ -203,6 +203,33 @@ resource "kubernetes_role_binding" "runner" {
     }
 }
 
+resource "kubernetes_cluster_role" "runner" {
+    metadata {
+        name = "runner"
+    }
+    rule {
+        api_groups = [""]
+        resources = ["nodes"]
+        verbs = ["get", "list"]
+    }
+}
+
+resource "kubernetes_cluster_role_binding" "runner" {
+    metadata {
+        name = "${kubernetes_service_account.runner.metadata[0].name}-${kubernetes_role.runner.metadata[0].name}"
+    }
+    subject {
+        kind = "ServiceAccount"
+        name = kubernetes_service_account.runner.metadata[0].name
+        namespace = kubernetes_namespace.po.metadata[0].name
+    }
+    role_ref {
+        api_group = "rbac.authorization.k8s.io"
+        kind = "ClusterRole"
+        name = kubernetes_cluster_role.runner.metadata[0].name
+    }
+}
+
 # ===========================================
 # Register the agent runner in the humanitec platform orchestrator
 # ===========================================
