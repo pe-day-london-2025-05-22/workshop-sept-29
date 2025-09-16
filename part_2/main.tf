@@ -53,6 +53,23 @@ resource "platform-orchestrator_resource_type" "score-workload" {
     })
 }
 
+resource "platform-orchestrator_resource_type" "eks-cluster" {
+    id = "eks-cluster${var.humanitec_id_suffix}"
+    description = "EKS cluster"
+    is_developer_accessible = false
+    output_schema = jsonencode({
+        required = ["name", "region"]
+        properties = {
+            name = {
+                type = "string"
+            }
+            region = {
+                type = "string"
+            }
+        }
+    })
+}
+
 resource "platform-orchestrator_resource_type" "k8s-namespace" {
     id = "k8s-namespace${var.humanitec_id_suffix}"
     description = "K8s Namespace"
@@ -131,11 +148,25 @@ resource "platform-orchestrator_module" "k8s-score-workload" {
     depends_on = [ platform-orchestrator_resource_type.k8s-namespace, platform-orchestrator_resource_type.k8s-service-account ]
 }
 
+resource "platform-orchestrator_module" "eks-cluster" {
+    id = "eks-cluster${var.humanitec_id_suffix}"
+    resource_type = platform-orchestrator_resource_type.eks-cluster.id
+    module_source = "git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/eks-cluster/runner-context"
+    provider_mapping = {
+        kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+    }
+}
+
 resource "platform-orchestrator_module" "k8s-namespace" {
     id = "k8s-namespace${var.humanitec_id_suffix}"
     resource_type = platform-orchestrator_resource_type.k8s-namespace.id
-    description = "Provision a Kubernetes namespace onto the kubernetes cluster"
+    description = "Provision a Kubernetes namespace onto the EKS kubernetes cluster"
     module_source = "git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/k8s-namespace/new"
+    dependencies = {
+        cluster = {
+            type = "eks-cluster"
+        }
+    }
     provider_mapping = {
         kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
     }

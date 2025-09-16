@@ -15,6 +15,7 @@ hctl create environment workshop dev --set=env_type_id=development
 ```sh
 hctl get available-resource-types workshop-4 dev
 
+hctl create module-rule --set=module_id=eks-cluster3 --set=project_id=workshop-4
 hctl create module-rule --set=module_id=k8s-namespace3 --set=project_id=workshop-4
 hctl create module-rule --set=module_id=k8s-service-account3 --set=project_id=workshop-4
 hctl create module-rule --set=module_id=k8s-score-workload3 --set=project_id=workshop-4
