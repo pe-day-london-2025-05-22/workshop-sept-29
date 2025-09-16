@@ -119,9 +119,9 @@ resource "platform-orchestrator_module_rule" "new-dynamodb" {
 # Part 3.2
 # ===========================================
 
-1. Go to AWS IAM
-2. Create humanitec-runner role
-3. Add dynamodb full access
-4. Go to EKS, switch Access tab
-5. Add pod identity association between humanitec-runner role, platform-orchestrator namespace, runner service account
-6. kubectl rollout restart -n platform-orchestrator deployment/agent
+# 1. Go to AWS IAM
+# 2. Create humanitec-runner role
+# 3. Add dynamodb full access
+# 4. Go to EKS, switch Access tab
+# 5. Add pod identity association between humanitec-runner role, platform-orchestrator namespace, runner service account
+# 6. kubectl rollout restart -n platform-orchestrator deployment/agent
