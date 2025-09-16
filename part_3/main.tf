@@ -102,7 +102,7 @@ resource "platform-orchestrator_module" "new-dynamodb" {
             project_id = "$${context.project_id}"
             env_id = "$${context.env_id}"
         }
-        allows_roles = "$${select.consumers('score-workload${var.humanitec_id_suffix}').dependencies('k8s-service-account${var.humanitec_id_suffix}').consumers('iam-role${var.humanitec_id_suffix}').outputs.name}"
+        allowed_role_names = "$${select.consumers('score-workload${var.humanitec_id_suffix}').dependencies('k8s-service-account${var.humanitec_id_suffix}').consumers('iam-role${var.humanitec_id_suffix}').outputs.name}"
     })
     provider_mapping = {
         aws = "${platform-orchestrator_provider.aws.provider_type}.${platform-orchestrator_provider.aws.id}"

@@ -54,7 +54,8 @@ TODO: add coprovision iam-role to service-account
 ```sh
 hctl update module k8s-service-account3 --set-yaml=- <<"EOF"
 coprovisioned:
-> - type: iam-role3
+- type: iam-role3
+  is_dependent_on_current: true
 > EOF
 ```
 
