@@ -1,0 +1,18 @@
+apiVersion: score.dev/v1b1
+metadata:
+  name: db-app
+  annotations:
+    humanitec.dev/resType: score-workload3
+containers:
+  main:
+    image: nginx:latest
+    variables:
+      TABLE_NAME: ${resources.todos-table.name}
+      TABLE_REGION: ${resources.todos-table.region}
+resources:
+  todos-table:
+    type: dynamodb-table3
+    params:
+      hash_key: Id
+      range_key: CreatedAtEpoch
+      range_key_type: N
