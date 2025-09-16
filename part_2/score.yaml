@@ -4,6 +4,31 @@ metadata:
 containers:
   main:
     image: nginx:latest
+    files:
+      /etc/nginx/conf.d/default.conf:
+        content: |
+          server {
+              listen       80;
+              listen  [::]:80;
+              server_name  ${resources.dns.hostname};
+              access_log  /dev/stdout info;
+              location / {
+                  root   /usr/share/nginx/html;
+                  index  index.html index.htm;
+              }
+          }
+      /usr/share/nginx/html/index.html:
+        content: |
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <title>Hello Score</title>
+          </head>
+          <body>
+              <h1>Hello Score!</h1>
+          </body>
+          </html>
 service:
   ports:
     web:
