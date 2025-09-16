@@ -153,6 +153,17 @@ terraform {
     }
 }
 
+variable "eks_clusters" {
+    type = list(object({
+        name = { type = string }
+        region = { type = string }
+    }))
+    validation {
+      condition = length(var.eks_clusters) == 1
+      error_message = "Must select one cluster"
+    }
+}
+
 variable "namespaces" {
     type = list(string)
     validation {
@@ -191,7 +202,8 @@ resource "aws_iam_role" "r" {
 }
 
 resource "aws_eks_pod_identity_association" "example" {
-  cluster_name    = aws_eks_cluster.example.name
+  region = var.eks_clusters[0].region
+  cluster_name    = var.eks_clusters[0].name
   namespace       = var.namespaces[0]
   service_account = var.service_accounts[0]
   role_arn        = aws_iam_role.rarn
@@ -202,6 +214,7 @@ output "name" {
 }
 EOT
     module_inputs = jsonencode({
+        eks_clusters = "$${select.dependencies('k8s-service-account${var.humanitec_id_suffix}').dependencies('k8s-namespace${var.humanitec_id_suffix}').dependencies('eks-cluster${var.humanitec_id_suffix}').outputs}"
         namespaces = "$${select.dependencies('k8s-service-account${var.humanitec_id_suffix}').dependencies('k8s-namespace${var.humanitec_id_suffix}').outputs.name}"
         service_accounts = "$${select.dependencies('k8s-service-account${var.humanitec_id_suffix}').outputs.name}"
     })
