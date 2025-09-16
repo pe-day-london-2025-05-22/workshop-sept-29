@@ -86,5 +86,5 @@ resource "platform-orchestrator_module" "new-dynamodb" {
 
 resource "platform-orchestrator_module_rule" "new-dynamodb" {
     module_id = platform-orchestrator_module.new-dynamodb.id
-    project_id = var.project_id
+    project_id = var.humanitec_project_id
 }
