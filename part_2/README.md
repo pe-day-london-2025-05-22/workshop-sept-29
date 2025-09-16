@@ -68,9 +68,9 @@ hctl create module-rule --set=module_id=dns-ingress  --set=project_id=workshop
 resources:
   route:
     type: route
+    class: 
     params:
       hostname: ${resources.dns.hostname}
-      path_prefix: / 
       port: 80
 ```
 
@@ -84,8 +84,20 @@ EOF
 ```
 
 ```sh
-hctl create module k8s-score-route --set-yaml=- <<"EOF"
+hctl create module route-host-ingress --set-yaml=- <<"EOF"
 resource_type: route
-module_source: git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/route/echo
+module_source: git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/route/host-ingress
+module_params:
+    hostname:
+        type: string
+    port:
+        type: number
+
+module_inputs: jsonencode({
+    namespace: "${select.consumers('score-workload').dependencies('k8s-namespace').outputs.name}"
+    endpoint: "${select.consumers('score-workload').outputs.endpoint}"
+})
+provider_mapping:
+  kubernetes: kubernetes.default
 EOF
 ```
