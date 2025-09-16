@@ -30,7 +30,7 @@ variable "endpoint" {
     type = list(string)
     description = "The service to route to"
     validation {
-      condition = length(var.namespace) == 1
+      condition = length(var.endpoint) == 1
       error_message = "Must select one service endpoint"
     }
 }
