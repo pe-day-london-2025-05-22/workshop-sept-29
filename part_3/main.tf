@@ -96,6 +96,13 @@ resource "platform-orchestrator_module" "new-dynamodb" {
             is_optional = true
         }
     }
+    module_inputs = jsonencode({
+        context = {
+            org_id = "$${context.org_id}"
+            project_id = "$${context.project_id}"
+            env_id = "$${context.env_id}"
+        }
+    })
     provider_mapping = {
         aws = "${platform-orchestrator_provider.aws.provider_type}.${platform-orchestrator_provider.aws.id}"
     }
