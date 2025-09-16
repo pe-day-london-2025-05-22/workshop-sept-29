@@ -135,7 +135,7 @@ data "aws_iam_policy_document" "assume_role" {
 }
 
 resource "aws_iam_role" "runner" {
-  name               = "runner-role"
+  name               = "humanitec-runner"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
@@ -151,3 +151,7 @@ resource "aws_eks_pod_identity_association" "example" {
   role_arn        = aws_iam_role.runner.arn
 }
 */
+
+// GO TO https://us-east-1.console.aws.amazon.com/iam/home?region=us-west-2#/roles/details/eks-workshop-ide-role/attach-policies
+// Edit the eks-workshop-ide-iam policy
+// Add "arn:aws:iam::<account-id>:role/humanitec-runner*"
