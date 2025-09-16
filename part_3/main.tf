@@ -79,6 +79,23 @@ resource "platform-orchestrator_module" "new-dynamodb" {
     resource_type = platform-orchestrator_resource_type.dynamodb.id
     description = "Provision a new dynamo db table"
     module_source = "git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/dynamodb_table/new"
+    module_params = {
+        hash_key = {
+            type = "string"
+        }
+        hash_key_type = {
+            type = "string"
+            is_optional = true
+        }
+        range_key = {
+            type = "string"
+            is_optional = true
+        }
+        range_key_type = {
+            type = "string"
+            is_optional = true
+        }
+    }
     provider_mapping = {
         aws = "${platform-orchestrator_provider.aws.provider_type}.${platform-orchestrator_provider.aws.id}"
     }
