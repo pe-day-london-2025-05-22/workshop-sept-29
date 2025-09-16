@@ -87,8 +87,8 @@ resource "aws_dynamodb_table" "table" {
 }
 
 resource "aws_iam_role_policy_attachment" "dynamodb_access" {
-  for_each   = toset(var.allowed_role_names)
-  role       = each.value
+  count      = length(var.allowed_role_names)
+  role       = sorted(var.allowed_role_names)[count.index]
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 
