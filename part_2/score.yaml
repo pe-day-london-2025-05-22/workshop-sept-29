@@ -1,6 +1,8 @@
 apiVersion: score.dev/v1b1
 metadata:
   name: simple
+  annotations:
+    humanitec.dev/resType: score-workload
 containers:
   main:
     image: nginx:latest
@@ -11,8 +13,8 @@ containers:
               listen       80;
               listen  [::]:80;
               server_name  ${resources.dns.hostname};
-              error_log    stderr error;
-              access_log   /dev/stdout combined;
+              error_log stderr error;
+              access_log  /dev/stdout;
               location / {
                   root   /usr/share/nginx/html;
                   index  index.html index.htm;
@@ -38,3 +40,9 @@ service:
 resources:
   dns:
     type: dns
+  route:
+    type: route
+    class: host-only
+    params:
+      hostname: ${resources.dns.hostname}
+      port: 80
