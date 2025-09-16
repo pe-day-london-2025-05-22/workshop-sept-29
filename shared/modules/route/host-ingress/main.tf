@@ -68,5 +68,6 @@ output "humanitec_metadata" {
   value = {
     "Kubernetes-Namespace": var.namespace[0]
     "Kubernetes-Service": local.service
+    "Web-Url": "http://${var.hostname}"
   }
 }
