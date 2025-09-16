@@ -16,5 +16,5 @@ LIMIT 1000;
 EOT
 ), "%", "*")
 
-    cloud_watch_url = local.cluster_name == "unknown" ? "" : "https://${local.cluster_region}.console.aws.amazon.com/cloudwatch/home?region=${cluster_region}#logs-insights$3FqueryDetail$3D~(end~0~start~-3600~timeType~'RELATIVE~tz~'UTC~unit~'seconds~editorString~'${local.cloud_watch_query}'"
+    cloud_watch_url = local.cluster_name == "unknown" ? "" : "https://${local.cluster_region}.console.aws.amazon.com/cloudwatch/home?region=${local.cluster_region}#logs-insights$3FqueryDetail$3D~(end~0~start~-3600~timeType~'RELATIVE~tz~'UTC~unit~'seconds~editorString~'${local.cloud_watch_query}'"
 }
