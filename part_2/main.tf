@@ -162,6 +162,10 @@ resource "platform-orchestrator_module" "k8s-namespace" {
     resource_type = platform-orchestrator_resource_type.k8s-namespace.id
     description = "Provision a Kubernetes namespace onto the EKS kubernetes cluster"
     module_source = "git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/k8s-namespace/new"
+    module_inputs = jsonencode({
+        cluster_name = "${resources.cluster.outputs.name}"
+        cluster_region = "${resources.cluster.outputs.region}"
+    })
     dependencies = {
         cluster = {
             type = "eks-cluster${var.humanitec_id_suffix}"

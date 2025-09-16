@@ -21,13 +21,17 @@ resource "kubernetes_namespace_v1" "ns" {
     }
 }
 
-data "kubernetes_nodes" "nodes" {
+variable "cluster_region" {
+    type = string
+    default = "unknown"
 }
 
-locals {
-  node_labels = data.kubernetes_nodes.nodes.nodes[0].metadata[0].labels
-  cluster_region = lookup(local.node_labels, "topology.kubernetes.io/region", "unknown")
-  cluster_name = lookup(local.node_labels, "alpha.eksctl.io/cluster-name", "unknown")
+variable "cluster_name" {
+    type = string
+    default = "unknown"
+}
+
+data "kubernetes_nodes" "nodes" {
 }
 
 output "name" {
@@ -36,7 +40,7 @@ output "name" {
 
 output "humanitec_metadata" {
   value = {
-    "Console-Url": "https://${local.cluster_region}.console.aws.amazon.com/eks/clusters/${local.cluster_name}?region=${local.cluster_region}"
+    "Console-Url": "https://${var.cluster_region}.console.aws.amazon.com/eks/clusters/${var.cluster_name}?region=${var.cluster_region}"
     "Kubernetes-Namespace": kubernetes_namespace_v1.ns.metadata[0].name
   }
 }
