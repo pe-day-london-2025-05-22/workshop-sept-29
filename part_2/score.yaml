@@ -11,7 +11,8 @@ containers:
               listen       80;
               listen  [::]:80;
               server_name  ${resources.dns.hostname};
-              access_log  /dev/stdout info;
+              error_log    stderr error;
+              access_log   /dev/stdout combined;
               location / {
                   root   /usr/share/nginx/html;
                   index  index.html index.htm;

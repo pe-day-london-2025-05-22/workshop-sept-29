@@ -35,6 +35,10 @@ variable "endpoint" {
     }
 }
 
+variable "ingress_class_name" {
+  type = string
+}
+
 locals {
     service = split(".", var.endpoint[0])[0]
 }
@@ -45,6 +49,7 @@ resource "kubernetes_ingress_v1" "ingress" {
         namespace = var.namespace[0]
     }
     spec {
+        ingress_class_name = var.ingress_class_name
         rule {
             host = var.hostname
             http {
