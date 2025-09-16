@@ -20,8 +20,8 @@ locals {
   pod_labels      = { app = random_id.id.hex }
   # Create a map of all secret data, keyed by a stable identifier
   all_secret_data = merge(
-    { for k, v in kubernetes_secret.env : "env-${k}" => v.data },
-    { for k, v in kubernetes_secret.files : "file-${k}" => v.data }
+    { for k, v in kubernetes_secret_v1.env : "env-${k}" => v.data },
+    { for k, v in kubernetes_secret_v1.files : "file-${k}" => v.data }
   )
 
   # Create a sorted list of the keys of the combined secret data
@@ -152,7 +152,7 @@ resource "kubernetes_deployment_v1" "default" {
               for_each = container.value.variables != null ? [1] : []
               content {
                 secret_ref {
-                  name = kubernetes_secret.env[container.key].metadata[0].name
+                  name = kubernetes_secret_v1.env[container.key].metadata[0].name
                 }
               }
             }
@@ -251,7 +251,7 @@ resource "kubernetes_deployment_v1" "default" {
           content {
             name = "file-${file.key}"
             secret {
-              secret_name = kubernetes_secret.files[file.key].metadata[0].name
+              secret_name = kubernetes_secret_v1.files[file.key].metadata[0].name
               items {
                 key  = "content"
                 path = basename(file.value.fkey)
@@ -350,7 +350,7 @@ resource "kubernetes_stateful_set_v1" "default" {
               for_each = container.value.variables != null ? [1] : []
               content {
                 secret_ref {
-                  name = kubernetes_secret.env[container.key].metadata[0].name
+                  name = kubernetes_secret_v1.env[container.key].metadata[0].name
                 }
               }
             }
@@ -449,7 +449,7 @@ resource "kubernetes_stateful_set_v1" "default" {
           content {
             name = "file-${file.key}"
             secret {
-              secret_name = kubernetes_secret.files[file.key].metadata[0].name
+              secret_name = kubernetes_secret_v1.files[file.key].metadata[0].name
               items {
                 key  = "content"
                 path = basename(file.value.fkey)
