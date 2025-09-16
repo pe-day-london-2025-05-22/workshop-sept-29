@@ -18,13 +18,21 @@ variable "port" {
 }
 
 variable "namespace" {
-    type = string
+    type = list(string)
     description = "The namespace to create the ingress in. Fill this in using selectors"
+    validation {
+      condition = length(var.namespace) == 1
+      error_message = "Must select one namespace"
+    }
 }
 
 variable "endpoint" {
-    type = string
+    type = list(string)
     description = "The service to route to"
+    validation {
+      condition = length(var.namespace) == 1
+      error_message = "Must select one service endpoint"
+    }
 }
 
 locals {

@@ -94,13 +94,13 @@ module_params:
         type: number
 
 module_inputs: 
-    namespace: "${select.consumers('score-workload').dependencies('k8s-namespace').outputs.name}"
-    endpoint: "${select.consumers('score-workload').outputs.endpoint}"
+    namespace: "${select.consumers('workload').dependencies('score-workload').dependencies('k8s-namespace').outputs.name}"
+    endpoint: "${select.consumers('workload').dependencies('score-workload').outputs.endpoint}"
 provider_mapping:
   kubernetes: kubernetes.default
 EOF
 ```
 
-```
+```sh
 hctl create module-rule --set=module_id=route-host-ingress --set=resource_class=host-only --set=project_id=workshop-4
 ```
