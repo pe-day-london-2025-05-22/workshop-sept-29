@@ -112,3 +112,42 @@ resource "platform-orchestrator_module_rule" "new-dynamodb" {
     module_id = platform-orchestrator_module.new-dynamodb.id
     project_id = var.humanitec_project_id
 }
+
+# ===========================================
+# Part 3.2
+# ===========================================
+
+/*
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
+    }
+
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession"
+    ]
+  }
+}
+
+resource "aws_iam_role" "runner" {
+  name               = "runner-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+resource "aws_iam_role_policy_attachment" "manage-dynamo" {
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+  role       = aws_iam_role.runner.name
+}
+
+resource "aws_eks_pod_identity_association" "example" {
+  cluster_name    = "eks-workload"
+  namespace       = "platform-orchestrator"
+  service_account = "runner"
+  role_arn        = aws_iam_role.runner.arn
+}
+*/
