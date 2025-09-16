@@ -64,3 +64,8 @@ resource "aws_eks_addon" "cloudwatch" {
     cluster_name = data.aws_eks_cluster.workshop.name
     addon_name = "amazon-cloudwatch-observability"
 }
+
+resource "aws_eks_addon" "podident" {
+    cluster_name = data.aws_eks_cluster.workshop.name
+    addon_name = "eks-pod-identity-agent"
+}

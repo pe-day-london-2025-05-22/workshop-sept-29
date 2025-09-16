@@ -117,41 +117,9 @@ resource "platform-orchestrator_module_rule" "new-dynamodb" {
 # Part 3.2
 # ===========================================
 
-/*
-data "aws_iam_policy_document" "assume_role" {
-  statement {
-    effect = "Allow"
-
-    principals {
-      type        = "Service"
-      identifiers = ["pods.eks.amazonaws.com"]
-    }
-
-    actions = [
-      "sts:AssumeRole",
-      "sts:TagSession"
-    ]
-  }
-}
-
-resource "aws_iam_role" "runner" {
-  name               = "humanitec-runner"
-  assume_role_policy = data.aws_iam_policy_document.assume_role.json
-}
-
-resource "aws_iam_role_policy_attachment" "manage-dynamo" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
-  role       = aws_iam_role.runner.name
-}
-
-resource "aws_eks_pod_identity_association" "example" {
-  cluster_name    = "eks-workload"
-  namespace       = "platform-orchestrator"
-  service_account = "runner"
-  role_arn        = aws_iam_role.runner.arn
-}
-*/
-
-// GO TO https://us-east-1.console.aws.amazon.com/iam/home?region=us-west-2#/roles/details/eks-workshop-ide-role/attach-policies
-// Edit the eks-workshop-ide-iam policy
-// Add "arn:aws:iam::<account-id>:role/humanitec-runner*"
+1. Go to AWS IAM
+2. Create humanitec-runner role
+3. Add dynamodb full access
+4. Go to EKS, switch Access tab
+5. Add pod identity association between humanitec-runner role, platform-orchestrator namespace, runner service account
+6. kubectl rollout restart -n platform-orchestrator deployment/agent
