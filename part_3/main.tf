@@ -206,7 +206,7 @@ resource "aws_eks_pod_identity_association" "example" {
   cluster_name    = var.eks_clusters[0].name
   namespace       = var.namespaces[0]
   service_account = var.service_accounts[0]
-  role_arn        = aws_iam_role.rarn
+  role_arn        = aws_iam_role.r.arn
 }
 
 output "name" {
@@ -224,7 +224,7 @@ EOT
 }
 
 resource "platform-orchestrator_module_rule" "new-iam-role" {
-    module_id = platform-orchestrator_module.new-iam-role.id
+    module_id = platform-orchestrator_module.iam-role.id
     project_id = var.humanitec_project_id
 }
 
