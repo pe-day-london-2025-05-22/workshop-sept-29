@@ -109,7 +109,7 @@ output "humanitec_metadata" {
     local.create_service ? { "Kubernetes-Service" = kubernetes_service_v1.default[0].metadata[0].name } : {},
     local.workload_type == "Deployment" ? { "Kubernetes-Deployment" = kubernetes_deployment_v1.default[0].metadata[0].name } : {},
     local.workload_type == "StatefulSet" ? { "Kubernetes-StatefulSet" = kubernetes_stateful_set_v1.default[0].metadata[0].name } : {},
-    local.cloud_watch_url ? {"Cloud-Watch-Url" = local.cloud_watch_url} : {}
+    local.cloud_watch_url != "" ? {"Cloud-Watch-Url" = local.cloud_watch_url} : {}
   )
 }
 
