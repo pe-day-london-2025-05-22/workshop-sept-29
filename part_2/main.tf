@@ -164,7 +164,7 @@ resource "platform-orchestrator_module" "k8s-namespace" {
     module_source = "git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/k8s-namespace/new"
     dependencies = {
         cluster = {
-            type = "eks-cluster"
+            type = "eks-cluster${var.humanitec_id_suffix}"
         }
     }
     provider_mapping = {
