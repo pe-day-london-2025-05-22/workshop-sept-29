@@ -153,13 +153,18 @@ terraform {
     }
 }
 
-variable "eks_clusters" {
-    type = list(object({
-        name = { type = string }
-        region = { type = string }
-    }))
+variable "eks_cluster_names" {
+    type = list(string)
     validation {
-      condition = length(var.eks_clusters) == 1
+      condition = length(var.eks_cluster_names) == 1
+      error_message = "Must select one cluster"
+    }
+}
+
+variable "eks_cluster_regions" {
+    type = list(string)
+    validation {
+      condition = length(var.eks_cluster_regions) == 1
       error_message = "Must select one cluster"
     }
 }
@@ -202,8 +207,8 @@ resource "aws_iam_role" "r" {
 }
 
 resource "aws_eks_pod_identity_association" "example" {
-  region = var.eks_clusters[0].region
-  cluster_name    = var.eks_clusters[0].name
+  region = var.eks_cluster_regions[0]
+  cluster_name    = var.eks_cluster_names[0]
   namespace       = var.namespaces[0]
   service_account = var.service_accounts[0]
   role_arn        = aws_iam_role.r.arn
@@ -214,7 +219,8 @@ output "name" {
 }
 EOT
     module_inputs = jsonencode({
-        eks_clusters = "$${select.dependencies('k8s-service-account${var.humanitec_id_suffix}').dependencies('k8s-namespace${var.humanitec_id_suffix}').dependencies('eks-cluster${var.humanitec_id_suffix}').outputs}"
+        eks_cluster_names = "$${select.dependencies('k8s-service-account${var.humanitec_id_suffix}').dependencies('k8s-namespace${var.humanitec_id_suffix}').dependencies('eks-cluster${var.humanitec_id_suffix}').outputs.name}"
+        eks_cluster_regions = "$${select.dependencies('k8s-service-account${var.humanitec_id_suffix}').dependencies('k8s-namespace${var.humanitec_id_suffix}').dependencies('eks-cluster${var.humanitec_id_suffix}').outputs.region}"
         namespaces = "$${select.dependencies('k8s-service-account${var.humanitec_id_suffix}').dependencies('k8s-namespace${var.humanitec_id_suffix}').outputs.name}"
         service_accounts = "$${select.dependencies('k8s-service-account${var.humanitec_id_suffix}').outputs.name}"
     })
