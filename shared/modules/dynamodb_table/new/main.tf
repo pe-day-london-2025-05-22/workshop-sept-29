@@ -88,3 +88,10 @@ output "name" {
 output "region" {
     value = aws_dynamodb_table.table.region
 }
+
+output "humanitec_metadata" {
+    value = {
+        "Aws-Region" = aws_dynamodb_table.table.region
+        "Console-Url" = "https://${aws_dynamodb_table.table.region}.console.aws.amazon.com/dynamodbv2/home?region=${aws_dynamodb_table.table.region}#table?name=${aws_dynamodb_table.table.name}"
+    }
+}
