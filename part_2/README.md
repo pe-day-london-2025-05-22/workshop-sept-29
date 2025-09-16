@@ -102,5 +102,22 @@ EOF
 ```
 
 ```sh
+hctl update module route-host-ingress --set-yaml=- <<"EOF"
+module_source: git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/route/host-ingress
+module_params:
+    hostname:
+        type: string
+    port:
+        type: number
+
+module_inputs: 
+    namespace: "${select.consumers('workload').dependencies('score-workload3').dependencies('k8s-namespace3').outputs.name}"
+    endpoint: "${select.consumers('workload').dependencies('score-workload3').outputs.endpoint}"
+provider_mapping:
+  kubernetes: kubernetes.default3
+EOF
+```
+
+```sh
 hctl create module-rule --set=module_id=route-host-ingress --set=resource_class=host-only --set=project_id=workshop-4
 ```

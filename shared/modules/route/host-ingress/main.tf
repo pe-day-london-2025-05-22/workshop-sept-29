@@ -36,13 +36,13 @@ variable "endpoint" {
 }
 
 locals {
-    service = split(".", var.endpoint)[0]
+    service = split(".", var.endpoint[0])[0]
 }
 
 resource "kubernetes_ingress_v1" "ingress" {
     metadata {
         name = "${local.service}-${var.port}"
-        namespace = var.namespace
+        namespace = var.namespace[0]
     }
     spec {
         rule {
@@ -66,7 +66,7 @@ resource "kubernetes_ingress_v1" "ingress" {
 
 output "humanitec_metadata" {
   value = {
-    "Kubernetes-Namespace": var.namespace
+    "Kubernetes-Namespace": var.namespace[0]
     "Kubernetes-Service": local.service
   }
 }
