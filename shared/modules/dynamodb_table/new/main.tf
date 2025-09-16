@@ -46,6 +46,11 @@ variable "context" {
     })
 }
 
+variable "allowed_role_names" {
+    type = list(string)
+    description = "List of role names that need read/write access to the dynamodb table"
+}
+
 resource "random_id" "r" {
     byte_length = 5
 }
@@ -79,6 +84,12 @@ resource "aws_dynamodb_table" "table" {
     HumanitecProject = var.context.project_id
     HumanitecEnv = var.context.env_id
   }
+}
+
+resource "aws_iam_role_policy_attachment" "dynamodb_access" {
+  for_each   = toset(var.allowed_role_names)
+  role       = each.value
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 
 output "name" {
