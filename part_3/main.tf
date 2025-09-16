@@ -172,7 +172,7 @@ variable "eks_cluster_regions" {
 variable "namespaces" {
     type = list(string)
     validation {
-      condition = length(var.namespace) == 1
+      condition = length(var.namespaces) == 1
       error_message = "Must select one namespace"
     }
 }
