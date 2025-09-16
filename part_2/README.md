@@ -93,11 +93,14 @@ module_params:
     port:
         type: number
 
-module_inputs: jsonencode({
+module_inputs: 
     namespace: "${select.consumers('score-workload').dependencies('k8s-namespace').outputs.name}"
     endpoint: "${select.consumers('score-workload').outputs.endpoint}"
-})
 provider_mapping:
   kubernetes: kubernetes.default
 EOF
+```
+
+```
+hctl create module-rule --set=module_id=route-host-ingress --set=resource_class=host-only --set=project_id=workshop-4
 ```
