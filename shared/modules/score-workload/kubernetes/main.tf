@@ -16,8 +16,8 @@ resource "random_id" "id" {
 }
 
 locals {
-  workload_type   = lookup(coalesce(try(var.metadata.annotations, null), {}), "score.canyon.com/workload-type", "Deployment")
-  pod_labels      = { app = random_id.id.hex }
+  workload_type = lookup(coalesce(try(var.metadata.annotations, null), {}), "score.canyon.com/workload-type", "Deployment")
+  pod_labels    = { app = random_id.id.hex }
   # Create a map of all secret data, keyed by a stable identifier
   all_secret_data = merge(
     { for k, v in kubernetes_secret_v1.env : "env-${k}" => v.data },
@@ -74,7 +74,7 @@ locals {
 
 
 resource "kubernetes_secret_v1" "env" {
-  for_each = nonsensitive(toset([for k, v in var.containers: k if v.variables != null]))
+  for_each = nonsensitive(toset([for k, v in var.containers : k if v.variables != null]))
 
   metadata {
     name        = "${var.metadata.name}-${each.value}-env"

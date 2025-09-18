@@ -12,27 +12,27 @@ terraform {
 }
 
 variable "namespace" {
-    type = string
+  type = string
 }
 
 resource "random_id" "r" {
-    byte_length = 5
+  byte_length = 5
 }
 
 resource "kubernetes_service_account_v1" "sa" {
-    metadata {
-        name = "sa-${random_id.r.hex}"
-        namespace = var.namespace
-    }
+  metadata {
+    name      = "sa-${random_id.r.hex}"
+    namespace = var.namespace
+  }
 }
 
 output "name" {
-    value = kubernetes_service_account_v1.sa.metadata[0].name
+  value = kubernetes_service_account_v1.sa.metadata[0].name
 }
 
 output "humanitec_metadata" {
   value = {
-    "Kubernetes-Service-Account": kubernetes_service_account_v1.sa.metadata[0].name
-    "Kubernetes-Namespace": var.namespace
+    "Kubernetes-Service-Account" : kubernetes_service_account_v1.sa.metadata[0].name
+    "Kubernetes-Namespace" : var.namespace
   }
 }
