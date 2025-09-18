@@ -3,16 +3,16 @@
 # ===========================================
 
 terraform {
-    required_providers {
-        platform-orchestrator = {
-            source = "humanitec/platform-orchestrator"
-            version = "~> 2.0"
-        }
-        kubernetes = {
-            source = "hashicorp/kubernetes"
-            version = "~> 2.0"
-        }
+  required_providers {
+    platform-orchestrator = {
+      source  = "humanitec/platform-orchestrator"
+      version = "~> 2.0"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.0"
+    }
+  }
 }
 
 # ===========================================
@@ -20,12 +20,12 @@ terraform {
 # ===========================================
 
 variable "humanitec_org_id" {
-    type = string
+  type = string
 }
 
 variable "humanitec_id_suffix" {
-    type = string
-    default = ""
+  type    = string
+  default = ""
 }
 
 # ===========================================
@@ -33,7 +33,7 @@ variable "humanitec_id_suffix" {
 # ===========================================
 
 provider "platform-orchestrator" {
-    org_id = var.humanitec_org_id
+  org_id = var.humanitec_org_id
 }
 
 # ===========================================
@@ -41,59 +41,59 @@ provider "platform-orchestrator" {
 # ===========================================
 
 resource "platform-orchestrator_resource_type" "score-workload" {
-    id = "score-workload${var.humanitec_id_suffix}"
-    description = "Score Workload"
-    output_schema = jsonencode({
-        properties = {
-            endpoint = {
-                type = "string"
-            }
-        }
-    })
+  id          = "score-workload${var.humanitec_id_suffix}"
+  description = "Score Workload"
+  output_schema = jsonencode({
+    properties = {
+      endpoint = {
+        type = "string"
+      }
+    }
+  })
 }
 
 resource "platform-orchestrator_resource_type" "eks-cluster" {
-    id = "eks-cluster${var.humanitec_id_suffix}"
-    description = "EKS cluster"
-    is_developer_accessible = false
-    output_schema = jsonencode({
-        required = ["name", "region"]
-        properties = {
-            name = {
-                type = "string"
-            }
-            region = {
-                type = "string"
-            }
-        }
-    })
+  id                      = "eks-cluster${var.humanitec_id_suffix}"
+  description             = "EKS cluster"
+  is_developer_accessible = false
+  output_schema = jsonencode({
+    required = ["name", "region"]
+    properties = {
+      name = {
+        type = "string"
+      }
+      region = {
+        type = "string"
+      }
+    }
+  })
 }
 
 resource "platform-orchestrator_resource_type" "k8s-namespace" {
-    id = "k8s-namespace${var.humanitec_id_suffix}"
-    description = "K8s Namespace"
-    output_schema = jsonencode({
-        required = ["name"]
-        properties = {
-            name = {
-                type = "string"
-            }
-        }
-    })
+  id          = "k8s-namespace${var.humanitec_id_suffix}"
+  description = "K8s Namespace"
+  output_schema = jsonencode({
+    required = ["name"]
+    properties = {
+      name = {
+        type = "string"
+      }
+    }
+  })
 }
 
 resource "platform-orchestrator_resource_type" "k8s-service-account" {
-    id = "k8s-service-account${var.humanitec_id_suffix}"
-    is_developer_accessible = false
-    description = "K8s Service Account"
-    output_schema = jsonencode({
-        required = ["name"]
-        properties = {
-            name = {
-                type = "string"
-            }
-        }
-    })
+  id                      = "k8s-service-account${var.humanitec_id_suffix}"
+  is_developer_accessible = false
+  description             = "K8s Service Account"
+  output_schema = jsonencode({
+    required = ["name"]
+    properties = {
+      name = {
+        type = "string"
+      }
+    }
+  })
 }
 
 # ===========================================
@@ -101,94 +101,94 @@ resource "platform-orchestrator_resource_type" "k8s-service-account" {
 # ===========================================
 
 resource "platform-orchestrator_provider" "k8s" {
-    provider_type = "kubernetes"
-    id = "default${var.humanitec_id_suffix}"
-    source = "hashicorp/kubernetes"
-    version_constraint = "~> 2.0"
-    configuration = jsonencode({})
+  provider_type      = "kubernetes"
+  id                 = "default${var.humanitec_id_suffix}"
+  source             = "hashicorp/kubernetes"
+  version_constraint = "~> 2.0"
+  configuration      = jsonencode({})
 }
 
 resource "platform-orchestrator_module" "k8s-score-workload" {
-    id = "k8s-score-workload${var.humanitec_id_suffix}"
-    resource_type = platform-orchestrator_resource_type.score-workload.id
-    description = "Deploy a Score Workload onto a kubernetes cluster"
-    module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/score-workload/kubernetes"
-    provider_mapping = {
-        kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+  id            = "k8s-score-workload${var.humanitec_id_suffix}"
+  resource_type = platform-orchestrator_resource_type.score-workload.id
+  description   = "Deploy a Score Workload onto a kubernetes cluster"
+  module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/score-workload/kubernetes"
+  provider_mapping = {
+    kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+  }
+  module_params = {
+    metadata = {
+      type = "map"
     }
-    module_params = {
-        metadata = {
-            type = "map"
-        }
-        containers = {
-            type = "map"
-        }
-        service = {
-            type = "map"
-            is_optional = true
-        }
+    containers = {
+      type = "map"
     }
-    dependencies = {
-        ns = {
-            type = platform-orchestrator_resource_type.k8s-namespace.id
-            id = "shared-k8s-namespace"
-        }
-        acc = {
-            type = platform-orchestrator_resource_type.k8s-service-account.id
-            params = jsonencode({
-                namespace = "$${resources.ns.outputs.name}"
-            })
-        }
+    service = {
+      type        = "map"
+      is_optional = true
     }
-    module_inputs = jsonencode({
+  }
+  dependencies = {
+    ns = {
+      type = platform-orchestrator_resource_type.k8s-namespace.id
+      id   = "shared-k8s-namespace"
+    }
+    acc = {
+      type = platform-orchestrator_resource_type.k8s-service-account.id
+      params = jsonencode({
         namespace = "$${resources.ns.outputs.name}"
-        service_account_name = "$${resources.acc.outputs.name}"
-    })
+      })
+    }
+  }
+  module_inputs = jsonencode({
+    namespace            = "$${resources.ns.outputs.name}"
+    service_account_name = "$${resources.acc.outputs.name}"
+  })
 
-    depends_on = [ platform-orchestrator_resource_type.k8s-namespace, platform-orchestrator_resource_type.k8s-service-account ]
+  depends_on = [platform-orchestrator_resource_type.k8s-namespace, platform-orchestrator_resource_type.k8s-service-account]
 }
 
 resource "platform-orchestrator_module" "eks-cluster" {
-    id = "eks-cluster${var.humanitec_id_suffix}"
-    resource_type = platform-orchestrator_resource_type.eks-cluster.id
-    module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/eks-cluster/runner-context"
-    provider_mapping = {
-        kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
-    }
+  id            = "eks-cluster${var.humanitec_id_suffix}"
+  resource_type = platform-orchestrator_resource_type.eks-cluster.id
+  module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/eks-cluster/runner-context"
+  provider_mapping = {
+    kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+  }
 }
 
 resource "platform-orchestrator_module" "k8s-namespace" {
-    id = "k8s-namespace${var.humanitec_id_suffix}"
-    resource_type = platform-orchestrator_resource_type.k8s-namespace.id
-    description = "Provision a Kubernetes namespace onto the EKS kubernetes cluster"
-    module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/k8s-namespace/new"
-    module_inputs = jsonencode({
-        cluster_name = "$${resources.cluster.outputs.name}"
-        cluster_region = "$${resources.cluster.outputs.region}"
-    })
-    dependencies = {
-        cluster = {
-            type = "eks-cluster${var.humanitec_id_suffix}"
-        }
+  id            = "k8s-namespace${var.humanitec_id_suffix}"
+  resource_type = platform-orchestrator_resource_type.k8s-namespace.id
+  description   = "Provision a Kubernetes namespace onto the EKS kubernetes cluster"
+  module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/k8s-namespace/new"
+  module_inputs = jsonencode({
+    cluster_name   = "$${resources.cluster.outputs.name}"
+    cluster_region = "$${resources.cluster.outputs.region}"
+  })
+  dependencies = {
+    cluster = {
+      type = "eks-cluster${var.humanitec_id_suffix}"
     }
-    provider_mapping = {
-        kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
-    }
+  }
+  provider_mapping = {
+    kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+  }
 }
 
 resource "platform-orchestrator_module" "k8s-service-account" {
-    id = "k8s-service-account${var.humanitec_id_suffix}"
-    resource_type = platform-orchestrator_resource_type.k8s-service-account.id
-    description = "Provision a Kubernetes service account onto the kubernetes cluster in the given namespace"
-    module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/k8s-service-account/new"
-    provider_mapping = {
-        kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+  id            = "k8s-service-account${var.humanitec_id_suffix}"
+  resource_type = platform-orchestrator_resource_type.k8s-service-account.id
+  description   = "Provision a Kubernetes service account onto the kubernetes cluster in the given namespace"
+  module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/k8s-service-account/new"
+  provider_mapping = {
+    kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+  }
+  module_params = {
+    namespace = {
+      type = "string"
     }
-    module_params = {
-        namespace = {
-            type = "string"
-        }
-    }
+  }
 }
 
 # ===========================================
@@ -197,70 +197,70 @@ resource "platform-orchestrator_module" "k8s-service-account" {
 
 
 variable "is_part_2_modules_enabled" {
-  type = bool
+  type    = bool
   default = false
 }
 
 resource "platform-orchestrator_resource_type" "dns" {
-    count = var.is_part_2_modules_enabled ? 1 : 0
+  count = var.is_part_2_modules_enabled ? 1 : 0
 
-    id = "dns${var.humanitec_id_suffix}"
-    output_schema = jsonencode({
-        required = ["hostname"]
-        properties = {
-            hostname = {
-                type = "string"
-            }
-        }
-    })
+  id = "dns${var.humanitec_id_suffix}"
+  output_schema = jsonencode({
+    required = ["hostname"]
+    properties = {
+      hostname = {
+        type = "string"
+      }
+    }
+  })
 }
 
 resource "platform-orchestrator_module" "dns" {
-    count = var.is_part_2_modules_enabled ? 1 : 0
+  count = var.is_part_2_modules_enabled ? 1 : 0
 
-    id = "dns${var.humanitec_id_suffix}"
-    resource_type = platform-orchestrator_resource_type.dns[0].id
-    module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/dns/nginx-ingress-nlb"
-    provider_mapping = {
-        kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
-    }
-    depends_on = [ platform-orchestrator_resource_type.dns ]
+  id            = "dns${var.humanitec_id_suffix}"
+  resource_type = platform-orchestrator_resource_type.dns[0].id
+  module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/dns/nginx-ingress-nlb"
+  provider_mapping = {
+    kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+  }
+  depends_on = [platform-orchestrator_resource_type.dns]
 }
 
 resource "platform-orchestrator_resource_type" "route" {
-    count = var.is_part_2_modules_enabled ? 1 : 0
+  count = var.is_part_2_modules_enabled ? 1 : 0
 
-    id = "route${var.humanitec_id_suffix}"
-    output_schema = jsonencode({
-        type = "object"
-        additionalProperties = true
-    })
+  id = "route${var.humanitec_id_suffix}"
+  output_schema = jsonencode({
+    type                 = "object"
+    additionalProperties = true
+  })
 }
 
 resource "platform-orchestrator_module" "route" {
-    count = var.is_part_2_modules_enabled ? 1 : 0
+  count = var.is_part_2_modules_enabled ? 1 : 0
 
-    id = "route${var.humanitec_id_suffix}"
-    resource_type = platform-orchestrator_resource_type.route[0].id
-    module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/route/host-ingress"
-    provider_mapping = {
-        kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+  id            = "route${var.humanitec_id_suffix}"
+  resource_type = platform-orchestrator_resource_type.route[0].id
+  module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/route/host-ingress"
+  provider_mapping = {
+    kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+  }
+
+  module_params = {
+    hostname = {
+      type = "string"
     }
-
-    module_params = {
-        hostname = {
-            type = "string"
-        }
-        port = {
-            type = "number"
-        }
+    port = {
+      type = "number"
     }
-    module_inputs = jsonencode({
-        namespace = "$${select.consumers('workload').dependencies('score-workload').dependencies('k8s-namespace').outputs.name}"
-        endpoint = "$${select.consumers('workload').dependencies('score-workload').outputs.endpoint}"
-        ingress_class_name = "nginx"
-    })
-    
+  }
+  module_inputs = jsonencode({
+    namespace          = "$${select.consumers('workload').dependencies('score-workload').dependencies('k8s-namespace').outputs.name}"
+    endpoint           = "$${select.consumers('workload').dependencies('score-workload').outputs.endpoint}"
+    ingress_class_name = "nginx"
+  })
 
-    depends_on = [ platform-orchestrator_resource_type.dns ]
+
+  depends_on = [platform-orchestrator_resource_type.dns]
 }
