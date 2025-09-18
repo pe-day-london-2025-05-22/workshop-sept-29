@@ -1,8 +1,6 @@
 apiVersion: score.dev/v1b1
 metadata:
   name: simple
-  annotations:
-    humanitec.dev/resType: score-workload
 containers:
   main:
     image: nginx:latest
@@ -37,12 +35,3 @@ service:
     web:
       port: 80
       targetPort: 80
-resources:
-  dns:
-    type: dns
-  route:
-    type: route
-    class: host-only
-    params:
-      hostname: ${resources.dns.hostname}
-      port: 80

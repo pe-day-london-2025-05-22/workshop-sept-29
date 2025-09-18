@@ -78,7 +78,7 @@ resource "platform-orchestrator_module" "new-dynamodb" {
     id = "new-dynamodb-table${var.humanitec_id_suffix}"
     resource_type = platform-orchestrator_resource_type.dynamodb.id
     description = "Provision a new dynamo db table"
-    module_source = "git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/dynamodb_table/new"
+    module_source = "git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/dynamodb_table/new"
     module_params = {
         hash_key = {
             type = "string"

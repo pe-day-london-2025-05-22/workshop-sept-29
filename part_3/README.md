@@ -31,7 +31,7 @@ EOF
 ```sh
 hctl create module new-dynamodb-table --set-yaml=- <<"EOF"
 resource_type: dynamodb-table
-module_source: git::https://github.com/pe-day-london-2025-05-22/workshop-sept-29//shared/modules/dynamodb_table/new
+module_source: git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/dynamodb_table/new
 provider_mapping:
     aws: aws.automatic
 EOF

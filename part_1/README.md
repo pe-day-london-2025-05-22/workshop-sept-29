@@ -1,5 +1,7 @@
 # Part 1 - Connecting a Runner
 
+Part 1 introduces the Humanitec Platform Orchestrator and guides you through connecting it to your workshop Kubernetes cluster.
+
 1. Go to <https://console.humanitec.dev> and register for an account and free org
 2. Setup the hctl CLI <https://developer.humanitec.com/platform-orchestrator/docs/integrations/cli/>
 
