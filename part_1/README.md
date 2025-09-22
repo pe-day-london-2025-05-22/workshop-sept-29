@@ -6,10 +6,10 @@ Part 1 introduces the Humanitec Platform Orchestrator and guides you through con
 2. Setup the hctl CLI <https://developer.humanitec.com/platform-orchestrator/docs/integrations/cli/>
 
     ```sh
-    curl -fLO https://github.com/humanitec/hctl/releases/download/v1.36.10/hctl_1.36.10_linux_amd64.tar.gz
-    tar xvzf hctl_1.36.10_linux_amd64.tar.gz hctl
+    curl -fLO https://github.com/humanitec/hctl/releases/download/v1.38.0/hctl_1.38.0_linux_amd64.tar.gz
+    tar xvzf hctl_1.38.0_linux_amd64.tar.gz hctl
     sudo install -o root -g root -m 0755 hctl /usr/local/bin/hctl
-    rm hctl_1.36.10_linux_amd64.tar.gz
+    rm hctl_*.tar.gz
     ```
 
 3. Authenticate the CLI with your humctl account

@@ -41,9 +41,13 @@ resource "helm_release" "ingress" {
   ]
 }
 
+variable "eks_cluster_name" {
+  type = string
+  default = "eks-workshop"
+}
 
 data "aws_eks_cluster" "workshop" {
-  name = "eks-workshop"
+  name = var.eks_cluster_name
 }
 
 data "aws_eks_node_groups" "workshop" {
