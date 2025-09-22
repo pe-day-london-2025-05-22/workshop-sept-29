@@ -19,6 +19,7 @@ Next, we need to use our hctl CLI to setup a new Project and link our Runner to 
 ```sh
 hctl create project workshop
 hctl create runner-rule --set=runner_id=workshop --set=project_id=workshop
+hctl create environment-type development
 hctl create environment workshop dev --set=env_type_id=development
 ```
 
@@ -37,10 +38,10 @@ hctl get available-resource-types workshop dev
 To fix this, we must setup the rules in the orchestrator to use the new modules for our project.
 
 ```sh
-hctl create module-rule --set=module_id=eks-cluster3 --set=project_id=workshop
-hctl create module-rule --set=module_id=k8s-namespace3 --set=project_id=workshop
-hctl create module-rule --set=module_id=k8s-service-account3 --set=project_id=workshop
-hctl create module-rule --set=module_id=k8s-score-workload3 --set=project_id=workshop
+hctl create module-rule --set=module_id=eks-cluster --set=project_id=workshop
+hctl create module-rule --set=module_id=k8s-namespace --set=project_id=workshop
+hctl create module-rule --set=module_id=k8s-service-account --set=project_id=workshop
+hctl create module-rule --set=module_id=k8s-score-workload --set=project_id=workshop
 hctl get available-resource-types workshop dev
 ```
 
@@ -88,8 +89,8 @@ terraform apply
 And link the modules to our project
 
 ```sh
-hctl create module-rule --set=module_id=dns-ingress --set=project_id=workshop
-hctl create module-rule --set=module_id=route-host-ingress --set=project_id=workshop
+hctl create module-rule --set=module_id=dns --set=project_id=workshop
+hctl create module-rule --set=module_id=route --set=project_id=workshop
 ```
 
 Now when we deploy the Score file again, it should successfully provision a DNS and Route implementation in the graph.
