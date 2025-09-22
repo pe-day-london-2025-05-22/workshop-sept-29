@@ -2,6 +2,8 @@
 
 This step needs to be done before proceeding with the workshop since it takes a bit of time to provision and some of the remaining parts of the workshop rely on it.
 
+## Customising the EKS Cluster
+
 We're going to customise the EKS workshop cluster by installing some addons:
 
 1. Setup the EKS Pod Identity Addon.
@@ -17,3 +19,30 @@ cd part_0/
 terraform init
 terraform apply -auto-approve
 ```
+
+## Allowing our IDE user to create roles
+
+This needs to be done by hand unfortunately.
+
+1. In the Workshop Studio, follow the link to the "Open AWS console".
+2. In the search bar, enter "Roles" and navigate to the IAM Roles page.
+3. In the Roles search bar, enter "ideStack" and click on the EKS Workshop IDE Role.
+4. Select the "ide-password" policy in the policy list and add the following statement to the bottom
+
+```json
+{
+    "Effect": "Allow",
+    "Action": [
+        "iam:CreateRole",
+        "iam:AttachRolePolicy",
+        "iam:DetachRolePolicy",
+        "iam:DeleteRole",
+        "iam:GetRole",
+        "iam:ListAttachedRolePolicies",
+        "iam:PassRole"
+    ],
+    "Resource": "*"
+}
+```
+
+5. Click the "Next" and "Save" buttons to continue. Ignore the warning because we're using a demo workshop.

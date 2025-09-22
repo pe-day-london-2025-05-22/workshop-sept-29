@@ -98,13 +98,31 @@ resource "aws_iam_role" "humanitec_runner_role" {
           }
         }
       },
-      {
-        Effect = "Allow",
-        Action = "eks:DescribeCluster"
-        Resource = data.aws_eks_cluster.workshop.arn
-      },
     ]
   })
+}
+
+resource "aws_iam_role_policy" "humanitec_runner_policy" {
+  name_prefix = "humanitec_runner_policy"
+  role = aws_iam_role.humanitec_runner_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "eks:DescribeCluster",
+          "eks:ListClusters"
+        ],
+        Resource = data.aws_eks_cluster.workshop.arn
+      }
+    ]
+  })
+}
+resource "aws_iam_role_policy_attachment" "humanitec_runner_eks_policy" {
+  policy_arn = aws_iam_role_policy.humanitec_runner_policy.arn
+  role       = aws_iam_role.humanitec_runner_role.name
 }
 
 resource "aws_eks_access_entry" "humanitec_runner" {
