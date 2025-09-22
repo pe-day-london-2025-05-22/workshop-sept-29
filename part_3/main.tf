@@ -110,6 +110,24 @@ resource "aws_iam_role_policy_attachment" "dynamo_full_access" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 
+resource "aws_iam_role_policy" "custom_policy_statements" {
+  role       = tolist(data.aws_iam_roles.runner_inner_roles.names)[0]
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+        {
+            Action = [
+                "eks:CreatePodIdentityAssociation",
+                "eks:DeletePodIdentityAssociation",
+                "eks:DescribePodIdentityAssociation",
+            ],
+            Effect   = "Allow"
+            Resource = "*"
+        }
+    ]
+  })
+}
+
 # # ===========================================
 # # Part 3.1
 # # ===========================================
