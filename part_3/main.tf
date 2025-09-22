@@ -96,6 +96,20 @@ resource "platform-orchestrator_module_rule" "iam-role" {
     project_id = var.humanitec_project_id
 }
 
+data "aws_iam_roles" "runner_inner_roles" {
+    name_regex = "humanitec_runner_inner_role.*"
+}
+
+resource "aws_iam_role_policy_attachment" "iam_full_access" {
+  role       = data.aws_iam_roles.runner_inner_roles.roles.names[0]
+  policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
+}
+
+resource "aws_iam_role_policy_attachment" "dynamo_full_access" {
+  role       = data.aws_iam_roles.runner_inner_roles.roles.names[0]
+  policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
+}
+
 # # ===========================================
 # # Part 3.1
 # # ===========================================
