@@ -6,8 +6,8 @@ containers:
     image: ghcr.io/astromechza/dynamo-db-todos:v1.3.0
     variables:
       MOTD: "Hello $${context.org_id} $${context.project_id} $${context.env_id}"
-      TABLE_NAME: ${resources.todos-table.name}
-      TABLE_REGION: ${resources.todos-table.region}
+      AWS_REGION: ${resources.todos-table.region}
+      AWS_DYNAMODB_TABLE: ${resources.todos-table.name}
 service:
   ports:
     web:

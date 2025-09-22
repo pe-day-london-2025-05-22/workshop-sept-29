@@ -66,8 +66,26 @@ And the module:
 hctl create module new-dynamodb-table --set-yaml=- <<"EOF"
 resource_type: dynamodb-table
 module_source: git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/dynamodb_table/new
+module_params:
+  hash_key:
+    type: string
+  hash_key_type:
+    type: string
+    is_optional: true
+  range_key:
+    type: string
+    is_optional: true
+  range_key_type:
+    type: string
+    is_optional: true
+module_inputs:
+  context:
+    org_id: "${context.org_id}"
+    project_id: "${context.project_id}"
+    env_id: "${context.env_id}"
+  allowed_role_names: "${select.consumers('score-workload').dependencies('k8s-service-account').consumers('aws-iam-role').outputs.name}"
 provider_mapping:
-    aws: aws.default
+  aws: aws.default
 EOF
 ```
 
@@ -81,23 +99,4 @@ And we can deploy the Score file which contains the added Dynamo DB table:
 hctl score deploy workshop dev ./score2.yaml
 ```
 
-TODO: provision a new score app that uses the dynamo db
-
-TODO: notice the failure! failed to authenticate
-
-RequestID: L6BB74RI7FHVJAAIQ6ATOA0J5RVV4KQNSO5AEMVJF66Q9ASUAAJG, api error AccessDeniedException: User: arn:aws:sts::913524934415:assumed-role/eksctl-eks-workshop-nodegroup-defa-NodeInstanceRole-3RBNJ5l9oZZT/i-08c90401779a867f3 is not authorized to perform: dynamodb:CreateTable on resource: arn:aws:dynamodb:us-west-2:913524934415:table/tablea05b36847a because no identity-based policy allows the dynamodb:CreateTable action
-
-TODO: create provider and AWS identity association for the runner
-
-TODO: add coprovision iam-role to service-account
-
-```sh
-hctl update module k8s-service-account3 --set-yaml=- <<"EOF"
-coprovisioned:
-- type: iam-role3
-  is_dependent_on_current: true
-> EOF
-```
-
-
-TODO: create the table
+Now if we nagivate back to our web app in the browser (remember the Web-Url metadata on the "route" object), we can see that the "Add" button is enabled and we can create and save todo items persistently.
