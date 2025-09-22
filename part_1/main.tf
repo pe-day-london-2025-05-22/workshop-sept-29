@@ -68,6 +68,10 @@ data "aws_eks_cluster" "workshop" {
   name = var.eks_cluster_name
 }
 
+locals {
+  account_id = provider::aws::arn_parse(data.aws_eks_cluster.workshop.arn).account_id
+}
+
 resource "aws_iam_openid_connect_provider" "default" {
   url = "https://oidc.humanitec.dev"
   client_id_list = [
@@ -110,8 +114,8 @@ resource "aws_eks_access_entry" "humanitec_runner" {
 }
 
 locals {
-  sessionName = substr("${var.humanitec_org_id}_${var.humanitec_runner_id}", 0, 64)
-  k8sUserIdentity = "arg:aws:sts::${}:assumed-role/${aws_iam_role.humanitec_runner_role.name}/${local.sessionName}"
+  session_name = substr("${var.humanitec_org_id}_${var.humanitec_runner_id}", 0, 64)
+  k8s_user_identity = "arg:aws:sts::${local.account_id}:assumed-role/${aws_iam_role.humanitec_runner_role.name}/${local.session_name}"
 }
 
 # ===========================================
@@ -158,7 +162,7 @@ resource "kubernetes_role_binding" "runner" {
   }
   subject {
     kind      = "User"
-    name      = local.k8sUserIdentity
+    name      = local.k8s_user_identity
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -173,7 +177,7 @@ resource "kubernetes_cluster_role_binding_v1" "runner-admin" {
   }
   subject {
     kind      = "User"
-    name      = local.k8sUserIdentity
+    name      = local.k8s_user_identity
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -204,7 +208,7 @@ resource "kubernetes_cluster_role_binding_v1" "runner" {
   }
   subject {
     kind      = "User"
-    name      = local.k8sUserIdentity
+    name      = local.k8s_user_identity
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
