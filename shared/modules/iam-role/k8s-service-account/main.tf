@@ -71,3 +71,9 @@ resource "aws_eks_pod_identity_association" "example" {
 output "name" {
     value = aws_iam_role.r.name
 }
+
+output "humanitec_metadata" {
+    value = {
+        "Console-Url": "https://${var.eks_cluster_regions[0]}.console.aws.amazon.com/iam/home?region=${var.eks_cluster_regions[0]}#/roles/details/${aws_iam_role.r.name}"
+    }
+}
