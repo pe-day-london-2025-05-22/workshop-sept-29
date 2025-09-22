@@ -285,7 +285,7 @@ resource "aws_iam_role" "humanitec-runner-inner" {
 
 resource "aws_eks_pod_identity_association" "example" {
   region = data.aws_eks_cluster.workshop.region
-  cluster_name    = data.aws_eks_cluster.workshop.region.name
+  cluster_name    = data.aws_eks_cluster.workshop.name
   namespace       = kubernetes_namespace_v1.po.metadata[0].name
   service_account = kubernetes_service_account_v1.runner.metadata[0].name
   role_arn        = aws_iam_role.humanitec-runner-inner.arn
