@@ -204,8 +204,8 @@ resource "kubernetes_role_binding_v1" "runner" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account.agent.metadata[0].name
-    namespace = kubernetes_namespace.po.metadata[0].name
+    name      = kubernetes_service_account_v1.runer.metadata[0].name
+    namespace = kubernetes_namespace_v1.po.metadata[0].name
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -219,8 +219,9 @@ resource "kubernetes_cluster_role_binding_v1" "runner-admin" {
     generate_name = "runner-admin-cluster-role"
   }
   subject {
-    kind      = "User"
-    name      = local.k8s_user_identity
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account_v1.runer.metadata[0].name
+    namespace = kubernetes_namespace_v1.po.metadata[0].name
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -250,8 +251,9 @@ resource "kubernetes_cluster_role_binding_v1" "runner" {
     generate_name = "runner-custom-cluster-role"
   }
   subject {
-    kind      = "User"
-    name      = local.k8s_user_identity
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account_v1.runer.metadata[0].name
+    namespace = kubernetes_namespace_v1.po.metadata[0].name
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
