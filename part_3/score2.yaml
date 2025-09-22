@@ -22,7 +22,7 @@ resources:
       hostname: ${resources.dns.hostname}
       port: 80
   todos-table:
-    type: dynamodb-table3
+    type: dynamodb-table
     params:
       hash_key: Id
       range_key: CreatedAtEpoch

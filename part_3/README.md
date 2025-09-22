@@ -40,7 +40,11 @@ And when we look at the resource graph in the console, we'll see an IAM role ass
 hctl get active-resource-nodes workshop dev --out json | jq '.[] | select(.resource_type == "aws-iam-role")'
 ```
 
+## Provisioning the Dynamo DB
 
+Now that our running pod is getting a secure AWS identity, we can provision a dynamo DB and link it to our pod.
+
+Create the resource type:
 
 ```sh
 hctl create resource-type dynamodb-table --set-yaml=- <<"EOF"
@@ -56,28 +60,25 @@ output_schema:
 EOF
 ```
 
-TODO: create dynamodb_table module and matching rule
-
-```sh
-hctl create provider aws automatic --set-yaml=- <<"EOF"
-source: "hashicorp/aws"
-version_constraint: "~> 6.0"
-configuration:
-    region: us-west-2
-EOF
-```
+And the module:
 
 ```sh
 hctl create module new-dynamodb-table --set-yaml=- <<"EOF"
 resource_type: dynamodb-table
 module_source: git::https://github.com/pe-workshops/workshop-sept-29//shared/modules/dynamodb_table/new
 provider_mapping:
-    aws: aws.automatic
+    aws: aws.default
 EOF
 ```
 
 ```sh
 hctl create module-rule --set=module_id=new-dynamodb-table --set=project_id=workshop
+```
+
+And we can deploy the Score file which contains the added Dynamo DB table:
+
+```sh
+hctl score deploy workshop dev ./score2.yaml
 ```
 
 TODO: provision a new score app that uses the dynamo db
