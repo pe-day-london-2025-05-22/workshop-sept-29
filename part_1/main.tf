@@ -121,7 +121,7 @@ resource "aws_iam_role_policy" "humanitec_runner_policy" {
   })
 }
 resource "aws_iam_role_policy_attachment" "humanitec_runner_eks_policy" {
-  policy_arn = aws_iam_role_policy.humanitec_runner_policy.arn
+  policy_arn = aws_iam_role_policy.humanitec_runner_policy.id
   role       = aws_iam_role.humanitec_runner_role.name
 }
 
