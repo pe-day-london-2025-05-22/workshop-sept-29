@@ -3,35 +3,19 @@ metadata:
   name: simple
 containers:
   main:
-    image: nginx:latest
-    files:
-      /etc/nginx/conf.d/default.conf:
-        content: |
-          server {
-              listen       80;
-              listen  [::]:80;
-              server_name  localhost;
-              error_log stderr error;
-              access_log  /dev/stdout;
-              location / {
-                  root   /usr/share/nginx/html;
-                  index  index.html index.htm;
-              }
-          }
-      /usr/share/nginx/html/index.html:
-        content: |
-          <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <title>Hello Score</title>
-          </head>
-          <body>
-              <h1>Hello Score!</h1>
-          </body>
-          </html>
+    image: ghcr.io/astromechza/dynamo-db-todos:v1.3.0
+    variables:
+      MOTD: "Hello $${context.org_id} $${context.project_id} $${context.env_id}"
 service:
   ports:
     web:
       port: 80
-      targetPort: 80
+      targetPort: 8080
+# resources:
+#   dns:
+#     type: dns
+#   route:
+#     type: route
+#     params:
+#       hostname: ${resources.dns.hostname}
+#       port: 80

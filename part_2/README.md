@@ -96,3 +96,5 @@ hctl create module-rule --set=module_id=route --set=project_id=workshop
 Now when we deploy the Score file again, it should successfully provision a DNS and Route implementation in the graph.
 
 If we inspect the metadata fields on the route or dns object, we can find the web url and browse to it.
+
+The result should be a running web app with a message of the day which shows that we can pass environmental context through the graph. However, two warning messages show that we can make this even more complex in part 3!
