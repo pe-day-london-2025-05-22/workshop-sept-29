@@ -262,6 +262,35 @@ resource "kubernetes_cluster_role_binding_v1" "runner" {
   }
 }
 
+data "aws_iam_policy_document" "assume_role" {
+  statement {
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["pods.eks.amazonaws.com"]
+    }
+
+    actions = [
+      "sts:AssumeRole",
+      "sts:TagSession"
+    ]
+  }
+}
+
+resource "aws_iam_role" "humanitec-runner-inner" {
+  name_prefix = "humanitec_runner_inner_role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role.json
+}
+
+resource "aws_eks_pod_identity_association" "example" {
+  region = data.aws_eks_cluster.workshop.region
+  cluster_name    = data.aws_eks_cluster.workshop.region.name
+  namespace       = kubernetes_namespace_v1.po.metadata[0].name
+  service_account = kubernetes_service_account_v1.runner.metadata[0].name
+  role_arn        = aws_iam_role.humanitec-runner-inner.arn
+}
+
 # ===========================================
 # Register the agent runner in the humanitec platform orchestrator
 # ===========================================

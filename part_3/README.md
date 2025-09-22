@@ -1,4 +1,4 @@
-# Part 3 - Platform Engineering of new resources and modules
+# Part 3 - Platform Engineering of real infrastructure
 
 In part 2, we saw that the app we deployed could take an AWS Dynamo DB and an AWS Bedrock model name as inputs for more complex behavior. In this part 3, we will be expanding the set of available resources to provision these before cloning our app to another environment.
 
@@ -26,6 +26,18 @@ However we now need to update our k8s-service-account module so that it also cop
 
 ```sh
 hctl update module k8s-service-account --set=coprovisioned='[{"type": "aws-iam-role", "is_dependent_on_current": true}]'
+```
+
+Now we can run our deploy again..
+
+```sh
+hctl score deploy workshop dev ./score.yaml
+```
+
+And when we look at the resource graph in the console, we'll see an IAM role associated. We can also see this in the graph nodes output:
+
+```sh
+hctl get active-resource-nodes workshop dev --out json | jq '.[] | select(.resource_type == "aws-iam-role")'
 ```
 
 
