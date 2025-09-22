@@ -155,7 +155,7 @@ resource "kubernetes_role_v1" "runner" {
   }
 }
 
-resource "kubernetes_role_binding" "runner" {
+resource "kubernetes_role_binding_v1" "runner" {
   metadata {
     generate_name = "runner-custom-role"
     namespace = kubernetes_namespace_v1.po.metadata[0].name
@@ -225,10 +225,10 @@ resource "platform-orchestrator_kubernetes_eks_runner" "workshop" {
   id = var.humanitec_runner_id
   runner_configuration = {
     cluster = {
-      name = aws_eks_cluster.workshop.name
-      region = aws_eks_cluster.workshop.region
+      name = data.aws_eks_cluster.workshop.name
+      region = data.aws_eks_cluster.workshop.region
       auth = {
-        role_arn = aws_iam_role.runner.arn
+        role_arn = aws_iam_role.humanitec_runner_role.arn
         session_name = local.session_name
       }
     }
