@@ -101,12 +101,12 @@ data "aws_iam_roles" "runner_inner_roles" {
 }
 
 resource "aws_iam_role_policy_attachment" "iam_full_access" {
-  role       = data.aws_iam_roles.runner_inner_roles.names[0]
+  role       = tolist(data.aws_iam_roles.runner_inner_roles.names)[0]
   policy_arn = "arn:aws:iam::aws:policy/IAMFullAccess"
 }
 
 resource "aws_iam_role_policy_attachment" "dynamo_full_access" {
-  role       = data.aws_iam_roles.runner_inner_roles.names[0]
+  role       = tolist(data.aws_iam_roles.runner_inner_roles.names)[0]
   policy_arn = "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess"
 }
 
