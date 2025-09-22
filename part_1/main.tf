@@ -129,7 +129,7 @@ resource "aws_eks_access_entry" "humanitec_runner" {
 
 locals {
   session_name = substr("${var.humanitec_org_id}_${var.humanitec_runner_id}", 0, 64)
-  k8s_user_identity = "arg:aws:sts::${local.account_id}:assumed-role/${aws_iam_role.humanitec_runner_role.name}/${local.session_name}"
+  k8s_user_identity = "arn:aws:sts::${local.account_id}:assumed-role/${aws_iam_role.humanitec_runner_role.name}/${local.session_name}"
 }
 
 # ===========================================
