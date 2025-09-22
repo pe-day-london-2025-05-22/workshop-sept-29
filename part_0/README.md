@@ -36,9 +36,13 @@ This needs to be done by hand unfortunately.
         "iam:CreateRole",
         "iam:AttachRolePolicy",
         "iam:DetachRolePolicy",
+        "iam:GetRolePolicy",
+        "iam:PutRolePolicy",
         "iam:DeleteRole",
         "iam:GetRole",
+        "iam:ListRolePolicies",
         "iam:ListAttachedRolePolicies",
+        "iam:ListInstanceProfilesForRole",
         "iam:PassRole"
     ],
     "Resource": "*"
