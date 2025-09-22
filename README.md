@@ -3,7 +3,7 @@
 1. Set up your AWS Workshop Studio environment
 2. Go to <https://console.humanitec.dev> and register for an account and free org
 3. Enter the hosted VSCode IDE
-4. Clone the workshop GitHub repo inside the IDE `git clone https://github.com/pe-workshops/workshop-sept-29.git`
+4. Clone the workshop GitHub repo inside the IDE `git clone https://github.com/pe-workshops/workshop-sept-29.git` and follow the README's from within that directory.
 
 Prerequisites:
 

@@ -40,6 +40,7 @@ locals {
 # ===========================================
 
 provider "platform-orchestrator" {
+  hctl_config_file = "/home/ec2-user/.config/hctl/config.yaml"
   org_id = var.humanitec_org_id
 }
 

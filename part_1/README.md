@@ -16,7 +16,7 @@ Part 1 introduces the Humanitec Platform Orchestrator and guides you through con
 
     ```sh
     hctl login
-    hctl get current-user --out yaml
+    hctl config set-org ...
     ```
 
 4. Setup terraform variables for Humanitec
