@@ -1,6 +1,24 @@
+# Part 3 - Platform Engineering of new resources and modules
 
+In part 2, we saw that the app we deployed could take an AWS Dynamo DB and an AWS Bedrock model name as inputs for more complex behavior. In this part 3, we will be expanding the set of available resources to provision these before cloning our app to another environment.
 
-TODO: create dynamodb_table resource type
+Our app requires a Dynamo DB table and a Bedrock model. Not only do we need the runner to now have AWS access to create the Dynamo DB and validate the bedrock model, but we also need the running Score application to have access to these APIs. Good thing we're running inside EKS, for we can use the Pod Identity addon that we installed in part 0!
+
+Therefore, we need to do the following for our app:
+
+1. Modify the k8s service account module from part 1 to also bind an IAM Role to the pod
+2. Provision a dynamo db table
+3. Provision a policy statement that allows the service account of the Score workload to access the dynamo db table
+4. Provision a policy statement that allows the Score workload to access AWS Bedrock
+
+## Adding the per-service-account IAM Role
+
+```sh
+cd part_3
+
+terraform init
+terraform apply
+```
 
 
 ```sh

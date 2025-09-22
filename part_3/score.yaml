@@ -1,15 +1,26 @@
 apiVersion: score.dev/v1b1
 metadata:
-  name: db-app
-  annotations:
-    humanitec.dev/resType: score-workload3
+  name: simple
 containers:
   main:
-    image: nginx:latest
+    image: ghcr.io/astromechza/dynamo-db-todos:v1.3.0
     variables:
+      MOTD: "Hello $${context.org_id} $${context.project_id} $${context.env_id}"
       TABLE_NAME: ${resources.todos-table.name}
       TABLE_REGION: ${resources.todos-table.region}
+service:
+  ports:
+    web:
+      port: 80
+      targetPort: 8080
 resources:
+  dns:
+    type: dns
+  route:
+    type: route
+    params:
+      hostname: ${resources.dns.hostname}
+      port: 80
   todos-table:
     type: dynamodb-table3
     params:
