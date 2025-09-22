@@ -204,7 +204,7 @@ resource "kubernetes_role_binding_v1" "runner" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account_v1.runer.metadata[0].name
+    name      = kubernetes_service_account_v1.runner.metadata[0].name
     namespace = kubernetes_namespace_v1.po.metadata[0].name
   }
   role_ref {
@@ -220,7 +220,7 @@ resource "kubernetes_cluster_role_binding_v1" "runner-admin" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account_v1.runer.metadata[0].name
+    name      = kubernetes_service_account_v1.runner.metadata[0].name
     namespace = kubernetes_namespace_v1.po.metadata[0].name
   }
   role_ref {
@@ -252,7 +252,7 @@ resource "kubernetes_cluster_role_binding_v1" "runner" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account_v1.runer.metadata[0].name
+    name      = kubernetes_service_account_v1.runner.metadata[0].name
     namespace = kubernetes_namespace_v1.po.metadata[0].name
   }
   role_ref {
