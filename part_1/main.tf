@@ -120,10 +120,6 @@ resource "aws_iam_role_policy" "humanitec_runner_policy" {
     ]
   })
 }
-resource "aws_iam_role_policy_attachment" "humanitec_runner_eks_policy" {
-  policy_arn = aws_iam_role_policy.humanitec_runner_policy.policy_arn
-  role       = aws_iam_role.humanitec_runner_role.name
-}
 
 resource "aws_eks_access_entry" "humanitec_runner" {
   cluster_name      = data.aws_eks_cluster.workshop.name
