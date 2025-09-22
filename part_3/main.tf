@@ -45,6 +45,11 @@ provider "platform-orchestrator" {
 provider "aws" {
 }
 
+data "platform-orchestrator_provider" "k8s" {
+    provider_type = "kubernetes"
+    id = "default${var.humanitec_id_suffix}"
+}
+
 resource "platform-orchestrator_provider" "aws" {
     provider_type = "aws"
     id = "default${var.humanitec_id_suffix}"
@@ -82,7 +87,7 @@ resource "platform-orchestrator_module" "k8s-service-account-iam" {
   })
   provider_mapping = {
     aws = "${platform-orchestrator_provider.aws.provider_type}.${platform-orchestrator_provider.aws.id}"
-    kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
+    kubernetes = "${data.platform-orchestrator_provider.k8s.provider_type}.${data.platform-orchestrator_provider.k8s.id}"
   }
 }
 
