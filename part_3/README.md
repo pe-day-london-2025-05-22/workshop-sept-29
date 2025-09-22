@@ -13,12 +13,21 @@ Therefore, we need to do the following for our app:
 
 ## Adding the per-service-account IAM Role
 
+We're first going to add a new IAM role resource type and an implementation which binds it to the k8s service account using pod identity.
+
 ```sh
 cd part_3
 
 terraform init
 terraform apply
 ```
+
+However we now need to update our k8s-service-account module so that it also coprovisions the IAM role.
+
+```sh
+hctl update module k8s-service-account --set=coprovisioned='[{"type": "aws-iam-role", "is_dependent_on_current": true}]'
+```
+
 
 
 ```sh

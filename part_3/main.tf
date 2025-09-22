@@ -91,10 +91,10 @@ resource "platform-orchestrator_module" "k8s-service-account-iam" {
   }
 }
 
-
-
-
-
+resource "platform-orchestrator_module_rule" "iam-role" {
+    module_id = platform-orchestrator_module.k8s-service-account-iam.id
+    project_id = var.humanitec_project_id
+}
 
 # # ===========================================
 # # Part 3.1
