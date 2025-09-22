@@ -4,6 +4,10 @@
 
 terraform {
   required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 6.0"
+    }
     platform-orchestrator = {
       source  = "humanitec/platform-orchestrator"
       version = "~> 2.0"
@@ -29,6 +33,11 @@ variable "humanitec_runner_id" {
   description = "Runner ids have to be unique, if there is already a runner with this ID and it can't be deleted or used, you can use this to use a new runner ID"
 }
 
+variable "eks_cluster_name" {
+  type = string
+  default = "eks-workshop"
+}
+
 locals {
   match_labels = {
     app = "humanitec-agent"
@@ -48,132 +57,87 @@ provider "kubernetes" {
   config_path = "~/.kube/config"
 }
 
+provider "aws" {
+}
+
 # ===========================================
-# Kubernetes resources for the agent and runner
-# agent = the reverse proxy pod
-# runner = the jobs running terraform/tofu
+# AWS Related OIDC Role assumption
 # ===========================================
 
-resource "kubernetes_namespace" "po" {
-  metadata {
-    name = "platform-orchestrator"
-  }
+data "aws_eks_cluster" "workshop" {
+  name = var.eks_cluster_name
 }
 
-resource "kubernetes_service_account" "agent" {
-  metadata {
-    name      = "agent"
-    namespace = kubernetes_namespace.po.metadata[0].name
-  }
+resource "aws_iam_openid_connect_provider" "default" {
+  url = "https://oidc.humanitec.dev"
+  client_id_list = [
+    "sts.amazonaws.com",
+  ]
 }
 
-// These are the permissions the reverse proxy job launcher needs to execute. In generate, it just needs to be able
-// to launch and monitor kubernetes jobs in it's own namespace. Nothing else.
-resource "kubernetes_role" "agent" {
-  metadata {
-    name      = "agent"
-    namespace = kubernetes_namespace.po.metadata[0].name
-  }
-  rule {
-    api_groups = ["batch"]
-    resources  = ["jobs"]
-    verbs      = ["create", "get", "list", "watch", "delete"]
-  }
-}
-
-resource "kubernetes_role_binding" "agent" {
-  metadata {
-    name      = "${kubernetes_service_account.agent.metadata[0].name}-${kubernetes_role.agent.metadata[0].name}"
-    namespace = kubernetes_namespace.po.metadata[0].name
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.agent.metadata[0].name
-    namespace = kubernetes_namespace.po.metadata[0].name
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "Role"
-    name      = kubernetes_role.agent.metadata[0].name
-  }
-}
-
-// We use a private key to authenticate the agent reverse proxy with humanitec. The private component 
-// is stored in a secret so that the agent can prove it's identity. The public component is passed to
-// humanitec when we register the agent further down.
-resource "tls_private_key" "agent" {
-  algorithm = "ED25519"
-}
-
-resource "kubernetes_secret" "agent-private-key" {
-  metadata {
-    name      = "agent-private-key"
-    namespace = kubernetes_namespace.po.metadata[0].name
-  }
-  data = {
-    key = tls_private_key.agent.private_key_pem
-  }
-}
-
-// Our actual agent reverse proxy runs as a 1-replica deployment as a basic example. This can get far
-// more complicated as we'll see in the later parts.
-resource "kubernetes_deployment" "agent" {
-  metadata {
-    name      = "agent"
-    namespace = kubernetes_namespace.po.metadata[0].name
-  }
-  spec {
-    replicas = 1
-    selector {
-      match_labels = local.match_labels
-    }
-    template {
-      metadata {
-        labels = local.match_labels
-      }
-      spec {
-        service_account_name = kubernetes_service_account.agent.metadata[0].name
-        container {
-          name  = "agent"
-          image = "ghcr.io/humanitec/canyon-runner:v1.7.1"
-          args  = ["remote"]
-          env {
-            name  = "ORG_ID"
-            value = var.humanitec_org_id
-          }
-          env {
-            name  = "RUNNER_ID"
-            value = var.humanitec_runner_id
-          }
-          env {
-            name = "PRIVATE_KEY"
-            value_from {
-              secret_key_ref {
-                name = kubernetes_secret.agent-private-key.metadata[0].name
-                key  = "key"
-              }
-            }
+resource "aws_iam_role" "humanitec_runner_role" {
+  name_prefix = "humanitec_runner_role"
+  description = "Role for Humanitec Orchestrator to access the workshop EKS cluster for launching runners"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = aws_iam_openid_connect_provider.default.arn,
+        },
+        Action = "sts:AssumeRoleWithWebIdentity",
+        Condition = {
+          StringEquals = {
+            "oidc.humanitec.dev:aud": "sts.amazonaws.com",
+            "oidc.humanitec.dev:sub": "${var.humanitec_org_id}+${var.humanitec_runner_id}",
           }
         }
-      }
-    }
+      },
+      {
+        Effect = "Allow",
+        Action = "eks:DescribeCluster"
+        Resource = data.aws_eks_cluster.workshop.arn
+      },
+    ]
+  })
+}
+
+resource "aws_eks_access_entry" "humanitec_runner" {
+  cluster_name      = data.aws_eks_cluster.workshop.name
+  principal_arn     = aws_iam_role.humanitec_runner_role.arn
+  type              = "STANDARD"
+}
+
+locals {
+  sessionName = substr("${var.humanitec_org_id}_${var.humanitec_runner_id}", 0, 64)
+  k8sUserIdentity = "arg:aws:sts::${}:assumed-role/${aws_iam_role.humanitec_runner_role.name}/${local.sessionName}"
+}
+
+# ===========================================
+# Kubernetes resources for the runner
+# ===========================================
+
+resource "kubernetes_namespace_v1" "po" {
+  metadata {
+    name = "platform-orchestrator"
   }
 }
 
 // The actual runner pods execute as a service account that needs permissions to at least store
 // it's kubernetes state file in kubernetes secrets. We will grant it more permissions later
 // if we need to.
-resource "kubernetes_service_account" "runner" {
+resource "kubernetes_service_account_v1" "runner" {
   metadata {
-    name      = "runner"
-    namespace = kubernetes_namespace.po.metadata[0].name
+    generate_name = "runner"
+    namespace = kubernetes_namespace_v1.po.metadata[0].name
   }
 }
 
-resource "kubernetes_role" "runner" {
+resource "kubernetes_role_v1" "runner" {
   metadata {
-    name      = "runner"
-    namespace = kubernetes_namespace.po.metadata[0].name
+    generate_name = "runner"
+    namespace = kubernetes_namespace_v1.po.metadata[0].name
   }
   rule {
     api_groups = [""]
@@ -189,29 +153,27 @@ resource "kubernetes_role" "runner" {
 
 resource "kubernetes_role_binding" "runner" {
   metadata {
-    name      = "${kubernetes_service_account.runner.metadata[0].name}-${kubernetes_role.runner.metadata[0].name}"
-    namespace = kubernetes_namespace.po.metadata[0].name
+    generate_name = "runner-custom-role"
+    namespace = kubernetes_namespace_v1.po.metadata[0].name
   }
   subject {
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.runner.metadata[0].name
-    namespace = kubernetes_namespace.po.metadata[0].name
+    kind      = "User"
+    name      = local.k8sUserIdentity
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Role"
-    name      = kubernetes_role.runner.metadata[0].name
+    name      = kubernetes_role_v1.runner.metadata[0].name
   }
 }
 
-resource "kubernetes_cluster_role_binding" "runner-admin" {
+resource "kubernetes_cluster_role_binding_v1" "runner-admin" {
   metadata {
-    name = "${kubernetes_service_account.runner.metadata[0].name}-${kubernetes_role.runner.metadata[0].name}-admin"
+    generate_name = "runner-admin-cluster-role"
   }
   subject {
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.runner.metadata[0].name
-    namespace = kubernetes_namespace.po.metadata[0].name
+    kind      = "User"
+    name      = local.k8sUserIdentity
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -220,9 +182,9 @@ resource "kubernetes_cluster_role_binding" "runner-admin" {
   }
 }
 
-resource "kubernetes_cluster_role" "runner" {
+resource "kubernetes_cluster_role_v1" "runner" {
   metadata {
-    name = "runner"
+    generate_name = "runner"
   }
   rule {
     api_groups = [""]
@@ -236,19 +198,18 @@ resource "kubernetes_cluster_role" "runner" {
   }
 }
 
-resource "kubernetes_cluster_role_binding" "runner" {
+resource "kubernetes_cluster_role_binding_v1" "runner" {
   metadata {
-    name = "${kubernetes_service_account.runner.metadata[0].name}-${kubernetes_role.runner.metadata[0].name}-custom"
+    generate_name = "runner-custom-cluster-role"
   }
   subject {
-    kind      = "ServiceAccount"
-    name      = kubernetes_service_account.runner.metadata[0].name
-    namespace = kubernetes_namespace.po.metadata[0].name
+    kind      = "User"
+    name      = local.k8sUserIdentity
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = kubernetes_cluster_role.runner.metadata[0].name
+    name      = kubernetes_cluster_role_v1.runner.metadata[0].name
   }
 }
 
@@ -256,31 +217,38 @@ resource "kubernetes_cluster_role_binding" "runner" {
 # Register the agent runner in the humanitec platform orchestrator
 # ===========================================
 
-resource "platform-orchestrator_kubernetes_agent_runner" "workshop" {
+resource "platform-orchestrator_kubernetes_eks_runner" "workshop" {
   id = var.humanitec_runner_id
   runner_configuration = {
-    key = tls_private_key.agent.public_key_pem
+    cluster = {
+      name = aws_eks_cluster.workshop.name
+      region = aws_eks_cluster.workshop.region
+      auth = {
+        role_arn = aws_iam_role.runner.arn
+        session_name = local.session_name
+      }
+    }
     job = {
-      namespace       = kubernetes_namespace.po.metadata[0].name
-      service_account = kubernetes_service_account.runner.metadata[0].name
+      namespace       = kubernetes_namespace_v1.po.metadata[0].name
+      service_account = kubernetes_service_account_v1.runner.metadata[0].name
     }
   }
   state_storage_configuration = {
     type = "kubernetes"
     kubernetes_configuration = {
-      namespace = kubernetes_namespace.po.metadata[0].name
+      namespace = kubernetes_namespace_v1.po.metadata[0].name
     }
   }
 }
 
 output "runner_url" {
-  value = "https://console.humanitec.dev/orgs/${var.humanitec_org_id}/runners/${platform-orchestrator_kubernetes_agent_runner.workshop.id}/configuration"
+  value = "https://console.humanitec.dev/orgs/${var.humanitec_org_id}/runners/${platform-orchestrator_kubernetes_eks_runner.workshop.id}/configuration"
 }
 
 output "kubernetes_runner_namespace" {
-  value = kubernetes_namespace.po.metadata[0].name
+  value = kubernetes_namespace_v1.po.metadata[0].name
 }
 
 output "kubernetes_runner_service_account" {
-  value = kubernetes_service_account.runner.metadata[0].name
+  value = kubernetes_service_account_v1.runner.metadata[0].name
 }
