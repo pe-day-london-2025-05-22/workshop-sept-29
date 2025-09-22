@@ -142,6 +142,34 @@ resource "kubernetes_namespace_v1" "po" {
   }
 }
 
+resource "kubernetes_role_v1" "humanitec" {
+  metadata {
+    generate_name = "humanitec"
+    namespace = kubernetes_namespace_v1.po.metadata[0].name
+  }
+  rule {
+    api_groups = ["batch"]
+    resources  = ["jobs"]
+    verbs      = ["create", "get", "list", "watch", "delete"]
+  }
+}
+
+resource "kubernetes_role_binding_v1" "humanitec" {
+  metadata {
+    generate_name = "humanitec-custom-role"
+    namespace = kubernetes_namespace_v1.po.metadata[0].name
+  }
+  subject {
+    kind      = "User"
+    name      = local.k8s_user_identity
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = kubernetes_role_v1.humanitec.metadata[0].name
+  }
+}
+
 // The actual runner pods execute as a service account that needs permissions to at least store
 // it's kubernetes state file in kubernetes secrets. We will grant it more permissions later
 // if we need to.
@@ -175,8 +203,9 @@ resource "kubernetes_role_binding_v1" "runner" {
     namespace = kubernetes_namespace_v1.po.metadata[0].name
   }
   subject {
-    kind      = "User"
-    name      = local.k8s_user_identity
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.agent.metadata[0].name
+    namespace = kubernetes_namespace.po.metadata[0].name
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"

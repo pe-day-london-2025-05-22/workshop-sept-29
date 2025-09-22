@@ -10,7 +10,7 @@ containers:
           server {
               listen       80;
               listen  [::]:80;
-              server_name  ${resources.dns.hostname};
+              server_name  localhost;
               error_log stderr error;
               access_log  /dev/stdout;
               location / {
