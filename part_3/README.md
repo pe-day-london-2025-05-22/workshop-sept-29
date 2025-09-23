@@ -70,14 +70,14 @@ module_params:
   hash_key:
     type: string
   hash_key_type:
-    type: string
     is_optional: true
+    type: string
   range_key:
-    type: string
     is_optional: true
+    type: string
   range_key_type:
-    type: string
     is_optional: true
+    type: string
 module_inputs:
   context:
     org_id: "${context.org_id}"
@@ -85,7 +85,7 @@ module_inputs:
     env_id: "${context.env_id}"
   allowed_role_names: "${select.consumers('score-workload').dependencies('k8s-service-account').consumers('aws-iam-role').outputs.name}"
 provider_mapping:
-  aws: aws.default
+    aws: aws.default
 EOF
 ```
 
@@ -99,4 +99,87 @@ And we can deploy the Score file which contains the added Dynamo DB table:
 hctl score deploy workshop dev ./score2.yaml
 ```
 
-Now if we nagivate back to our web app in the browser (remember the Web-Url metadata on the "route" object), we can see that the "Add" button is enabled and we can create and save todo items persistently.
+## Passing through the Bedrock model name
+
+For our AWS_BEDROCK_MODEL_NAME name we're going to create a model from scratch. On the surface this is simply a string configuration value, but it has a complication: Our deployed app needs runtime permissions to invoke the model so the module needs to identify the existing IAM role and add a policy for it.
+
+Unfortunately, for now, AWS model access needs to be granted manually in the AWS Console. So do the following steps.
+
+1. Follow the Workshop link to sign in to the AWS Console
+2. Enter "AWS Bedrock" in the top search bar and navigate to it
+3. In the left hand menu, go to "Model Access" near the bottom
+4. Now "Modify Model Access"
+5. Select both Amazon Titan Text G1 Lite and Express
+6. "Next"
+7. "Submit"
+
+We'll need a new resource type:
+
+```sh
+hctl create resource-type bedrock-model --set-yaml=- <<"EOF"
+description: "A name of the AWS Bedrock model the the app can consume"
+output_schema:
+  type: object
+  required:
+  - name
+  properties:
+    name: {"type": "string"}
+EOF
+```
+
+For the module itself, we're going to use an _inline_ module definition rather than a Git source. This is useful for testing and iteration and for entirely bespoke modules, but is limited to about 2000 characters.
+
+```sh
+hctl create module bedrock-text-model --set-yaml=- <<"EOF"
+resource_type: bedrock-model
+module_source: inline
+module_source_code: |
+  terraform {
+    required_providers {
+      aws = {
+        source  = "hashicorp/aws"
+        version = "~> 6.0"
+      }
+    }
+  }
+  variable "env_type_id" {
+    type = string
+  }
+  variable "allowed_role_names" {
+    type        = list(string)
+  }
+  locals {
+    model_name = var.env_type_id == "development" ? "amazon.titan-text-lite-v1" : "amazon.titan-text-express-v1"
+  }
+  resource "aws_iam_role_policy_attachment" "dynamodb_access" {
+    count      = length(var.allowed_role_names)
+    role       = sort(var.allowed_role_names)[count.index]
+    policy_arn = "arn:aws:iam::aws:policy/AmazonBedrockLimitedAccess"
+  }
+  output "name" {
+    value = local.model_name
+  }
+
+  data "aws_region" "current" {}
+
+  output "humanitec_metadata" {
+    value = {
+      "Bedrock-Model" = local.model_name,
+      "Console-Url" = "https://${data.aws_region.current.region}.console.aws.amazon.com/bedrock/home?region=${data.aws_region.current.region}#/model-catalog/serverless/${local.model_name}",
+    }
+  }
+module_inputs:
+  env_type_id: "${context.env_type_id}"
+  allowed_role_names: "${select.consumers('score-workload').dependencies('k8s-service-account').consumers('aws-iam-role').outputs.name}"
+provider_mapping:
+    aws: aws.default
+EOF
+```
+
+And a rule to go with it for our project:
+
+```sh
+hctl create module-rule --set=module_id=bedrock-text-model --set=project_id=workshop
+```
+
+And now we can deploy the third varient of our Score file which includes the model name.

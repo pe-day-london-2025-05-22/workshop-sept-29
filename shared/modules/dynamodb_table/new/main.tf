@@ -12,6 +12,13 @@ terraform {
 }
 
 provider "aws" {
+  default_tags {
+    tags = {
+      HumanitecOrg     = var.context.org_id
+      HumanitecProject = var.context.project_id
+      HumanitecEnv     = var.context.env_id
+    }
+  }
 }
 
 variable "name" {
@@ -75,15 +82,8 @@ resource "aws_dynamodb_table" "table" {
       type = var.range_key_type
     }
   }
-
-  read_capacity  = 20
-  write_capacity = 20
-
-  tags = {
-    HumanitecOrg     = var.context.org_id
-    HumanitecProject = var.context.project_id
-    HumanitecEnv     = var.context.env_id
-  }
+  
+  billing_mode = "PAY_PER_REQUEST"
 }
 
 resource "aws_iam_role_policy_attachment" "dynamodb_access" {
