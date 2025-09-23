@@ -34,3 +34,7 @@ You need that Humanitec organization that you signed up for here.
 ### Part 3
 
 [Part 3](./part_3/README.md) introduces the concepts of platform engineering modules and how to write them for maximum leverage.
+
+### Part 4
+
+[Part 4](./part_4/README.md) introduces cloning and promoting between environments as well as deleting environments when no longer needed.

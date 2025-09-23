@@ -183,3 +183,5 @@ hctl create module-rule --set=module_id=bedrock-text-model --set=project_id=work
 ```
 
 And now we can deploy the third varient of our Score file which includes the model name.
+
+We can now use the "Generate" button in the UI!
