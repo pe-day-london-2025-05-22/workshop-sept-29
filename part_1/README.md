@@ -40,11 +40,11 @@ Part 1 introduces the Humanitec Platform Orchestrator and guides you through con
     hctl create project test-runner
     hctl create runner-rule --set=runner_id=workshop --set=project_id=test-runner
     hctl create environment-type development
-    hctl create environment workshop dev --set=env_type_id=development
+    hctl create environment test-runner dev --set=env_type_id=development
     hctl deploy test-runner dev - --no-prompt <<"EOF"
-    workloads:
-        test: {}
-    EOF
+workloads:
+    test: {}
+EOF
     ```
 
 Great! Our EKS-based runner is connected and ready to run deployments.
