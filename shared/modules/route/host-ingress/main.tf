@@ -47,6 +47,9 @@ resource "kubernetes_ingress_v1" "ingress" {
   metadata {
     name      = "${local.service}-${var.port}"
     namespace = var.namespace[0]
+    annotations = {
+      "nginx.ingress.kubernetes.io/rewrite-target" : "/$2"
+    }
   }
   spec {
     ingress_class_name = var.ingress_class_name
@@ -54,7 +57,8 @@ resource "kubernetes_ingress_v1" "ingress" {
       host = var.hostname
       http {
         path {
-          path = "/"
+          path      = "/${var.namespace[0]}(/|$)(.*)"
+          path_type = "ImplementationSpecific"
           backend {
             service {
               name = local.service
@@ -73,6 +77,6 @@ output "humanitec_metadata" {
   value = {
     "Kubernetes-Namespace" : var.namespace[0]
     "Kubernetes-Service" : local.service
-    "Web-Url" : "http://${var.hostname}"
+    "Web-Url" : "http://${var.hostname}/${var.namespace[0]}"
   }
 }
