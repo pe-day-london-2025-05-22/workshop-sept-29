@@ -3,7 +3,7 @@ metadata:
   name: simple
 containers:
   main:
-    image: ghcr.io/astromechza/dynamo-db-todos:v1.5.0
+    image: ghcr.io/astromechza/dynamo-db-todos:v1.5.1
     variables:
       MOTD: "Hello $${context.org_id} $${context.project_id} $${context.env_id}"
 service:
@@ -11,11 +11,3 @@ service:
     web:
       port: 80
       targetPort: 8080
-# resources:
-#   dns:
-#     type: dns
-#   route:
-#     type: route
-#     params:
-#       hostname: ${resources.dns.hostname}
-#       port: 80
