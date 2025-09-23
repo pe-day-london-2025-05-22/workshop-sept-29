@@ -49,7 +49,7 @@ resource "kubernetes_ingress_v1" "ingress" {
     namespace = var.namespace[0]
     annotations = {
       "nginx.ingress.kubernetes.io/rewrite-target" = "/$2",
-      "nginx.ingress.kubernetes.io/x-forwarded-prefix " = "/${var.namespace[0]}/",
+      "nginx.ingress.kubernetes.io/x-forwarded-prefix" = "/${var.namespace[0]}/",
     }
   }
   spec {
