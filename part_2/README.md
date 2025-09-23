@@ -19,7 +19,6 @@ Next, we need to use our hctl CLI to setup a new Project and link our Runner to 
 ```sh
 hctl create project workshop
 hctl create runner-rule --set=runner_id=workshop --set=project_id=workshop
-hctl create environment-type development
 hctl create environment workshop dev --set=env_type_id=development
 ```
 

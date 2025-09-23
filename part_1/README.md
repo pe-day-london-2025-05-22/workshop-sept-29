@@ -39,6 +39,7 @@ Part 1 introduces the Humanitec Platform Orchestrator and guides you through con
     ```sh
     hctl create project test-runner
     hctl create runner-rule --set=runner_id=workshop --set=project_id=test-runner
+    hctl create environment-type development
     hctl create environment workshop dev --set=env_type_id=development
     hctl deploy test-runner dev - --no-prompt <<"EOF"
     workloads:

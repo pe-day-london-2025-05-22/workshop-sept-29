@@ -11,16 +11,6 @@ terraform {
   }
 }
 
-provider "aws" {
-  default_tags {
-    tags = {
-      HumanitecOrg     = var.context.org_id
-      HumanitecProject = var.context.project_id
-      HumanitecEnv     = var.context.env_id
-    }
-  }
-}
-
 variable "name" {
   type    = string
   default = null
