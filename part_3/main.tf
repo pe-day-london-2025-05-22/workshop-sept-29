@@ -57,7 +57,7 @@ resource "platform-orchestrator_provider" "aws" {
     version_constraint = "~> 6.0"
     configuration = jsonencode({
         region = "us-west-2"
-        default_tags[0] = {
+        "default_tags[0]" = {
             tags = {
                 HumanitecOrg = "$${context.org_id}"
                 HumanitecProject = "$${context.project_id}"
