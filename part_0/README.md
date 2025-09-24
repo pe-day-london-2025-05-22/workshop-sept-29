@@ -38,6 +38,7 @@ This needs to be done by hand unfortunately.
         "iam:DetachRolePolicy",
         "iam:GetRolePolicy",
         "iam:PutRolePolicy",
+        "iam:DeleteRolePolicy",
         "iam:DeleteRole",
         "iam:GetRole",
         "iam:ListRolePolicies",
