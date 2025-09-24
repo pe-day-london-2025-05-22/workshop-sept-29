@@ -38,3 +38,7 @@ You need that Humanitec organization that you signed up for here.
 ### Part 4
 
 [Part 4](./part_4/README.md) introduces cloning and promoting between environments as well as deleting environments when no longer needed.
+
+### Cleanup
+
+The `cleanup.sh` script can be used to undo parts 1, 2, 3, 4 and return your Humanitec org to a clean state.
