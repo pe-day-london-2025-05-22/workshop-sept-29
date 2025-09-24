@@ -1,6 +1,6 @@
 apiVersion: score.dev/v1b1
 metadata:
-  name: simple
+  name: todos
 containers:
   main:
     image: ghcr.io/astromechza/dynamo-db-todos:v1.5.1

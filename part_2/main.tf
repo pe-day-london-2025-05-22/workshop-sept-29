@@ -23,6 +23,11 @@ variable "humanitec_org_id" {
   type = string
 }
 
+variable "humanitec_project_id" {
+  type = string
+  default = "workshop"
+}
+
 variable "humanitec_id_suffix" {
   type    = string
   default = ""
@@ -149,6 +154,11 @@ resource "platform-orchestrator_module" "k8s-score-workload" {
   depends_on = [platform-orchestrator_resource_type.k8s-namespace, platform-orchestrator_resource_type.k8s-service-account]
 }
 
+resource "platform-orchestrator_module_rule" "k8s-score-workload" {
+  module_id = platform-orchestrator_module.k8s-score-workload.id
+  project_id = var.humanitec_project_id
+}
+
 resource "platform-orchestrator_module" "eks-cluster" {
   id            = "eks-cluster${var.humanitec_id_suffix}"
   resource_type = platform-orchestrator_resource_type.eks-cluster.id
@@ -156,6 +166,11 @@ resource "platform-orchestrator_module" "eks-cluster" {
   provider_mapping = {
     kubernetes = "${platform-orchestrator_provider.k8s.provider_type}.${platform-orchestrator_provider.k8s.id}"
   }
+}
+
+resource "platform-orchestrator_module_rule" "eks-cluster" {
+  module_id = platform-orchestrator_module.eks-cluster.id
+  project_id = var.humanitec_project_id
 }
 
 resource "platform-orchestrator_module" "k8s-namespace" {
@@ -177,6 +192,11 @@ resource "platform-orchestrator_module" "k8s-namespace" {
   }
 }
 
+resource "platform-orchestrator_module_rule" "k8s-namespace" {
+  module_id = platform-orchestrator_module.k8s-namespace.id
+  project_id = var.humanitec_project_id
+}
+
 resource "platform-orchestrator_module" "k8s-service-account" {
   id            = "k8s-service-account${var.humanitec_id_suffix}"
   resource_type = platform-orchestrator_resource_type.k8s-service-account.id
@@ -190,6 +210,11 @@ resource "platform-orchestrator_module" "k8s-service-account" {
       type = "string"
     }
   }
+}
+
+resource "platform-orchestrator_module_rule" "k8s-service-account" {
+  module_id = platform-orchestrator_module.k8s-service-account.id
+  project_id = var.humanitec_project_id
 }
 
 # ===========================================
@@ -228,6 +253,12 @@ resource "platform-orchestrator_module" "dns" {
   depends_on = [platform-orchestrator_resource_type.dns]
 }
 
+resource "platform-orchestrator_module_rule" "dns" {
+  count = var.is_part_2_modules_enabled ? 1 : 0
+  module_id = platform-orchestrator_module.dns[0].id
+  project_id = var.humanitec_project_id
+}
+
 resource "platform-orchestrator_resource_type" "route" {
   count = var.is_part_2_modules_enabled ? 1 : 0
 
@@ -264,4 +295,10 @@ resource "platform-orchestrator_module" "route" {
 
 
   depends_on = [platform-orchestrator_resource_type.dns]
+}
+
+resource "platform-orchestrator_module_rule" "route" {
+  count = var.is_part_2_modules_enabled ? 1 : 0
+  module_id = platform-orchestrator_module.route[0].id
+  project_id = var.humanitec_project_id
 }

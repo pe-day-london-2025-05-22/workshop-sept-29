@@ -14,37 +14,13 @@ terraform init
 terraform apply
 ```
 
-Next, we need to use our hctl CLI to setup a new Project and link our Runner to it. We'll then create a development environment to work in.
+Let's look at what resources are available:
 
 ```sh
-hctl create project workshop
-hctl create runner-rule --set=runner_id=workshop --set=project_id=workshop
-hctl create environment workshop dev --set=env_type_id=development
+hctl get available-resource-types workshop dev --out yaml
 ```
 
-If we tried to deploy our Score file now, we'd get an error because there are no implementations of the Score Workload resource type available!
-
-```sh
-hctl score deploy workshop dev ./score.yaml
-```
-
-We can confirm this by looking at the available resource types:
-
-```sh
-hctl get available-resource-types workshop dev
-```
-
-To fix this, we must setup the rules in the orchestrator to use the new modules for our project.
-
-```sh
-hctl create module-rule --set=module_id=eks-cluster --set=project_id=workshop
-hctl create module-rule --set=module_id=k8s-namespace --set=project_id=workshop
-hctl create module-rule --set=module_id=k8s-service-account --set=project_id=workshop
-hctl create module-rule --set=module_id=k8s-score-workload --set=project_id=workshop
-hctl get available-resource-types workshop dev
-```
-
-Now we can deploy our application.
+And finally deploy our score file.
 
 ```sh
 hctl score deploy workshop dev ./score.yaml
@@ -83,13 +59,6 @@ Enable the new modules and rerun the Terraform
 export TF_VAR_is_part_2_modules_enabled=true
 
 terraform apply
-```
-
-And link the modules to our project
-
-```sh
-hctl create module-rule --set=module_id=dns --set=project_id=workshop
-hctl create module-rule --set=module_id=route --set=project_id=workshop
 ```
 
 Now when we deploy the Score file again, it should successfully provision a DNS and Route implementation in the graph.

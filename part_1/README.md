@@ -47,4 +47,8 @@ Part 1 introduces the Humanitec Platform Orchestrator and guides you through con
     EOF
     ```
 
-Great! Our EKS-based runner is connected and ready to run deployments.
+Great! Our EKS-based runner is connected and ready to run deployments. We can see the completed job from our test deployment in the cluster:
+
+```sh
+kubectl get jobs -n platform-orchestrator
+```
