@@ -20,14 +20,17 @@ terraform init
 terraform apply -auto-approve
 ```
 
+**Success indicator:** You should see the terraform complete successfully and output information about the ingress controller installation.
+
 ## Allowing our IDE user to create roles
 
 This needs to be done by hand unfortunately.
 
-1. In the Workshop Studio, follow the link to the "Open AWS console".
+1. In the Workshop Studio, follow the link to "Open AWS console".
 2. In the search bar, enter "Roles" and navigate to the IAM Roles page.
 3. In the Roles search bar, enter "ideStack" and click on the EKS Workshop IDE Role.
-4. Select the "ide-password" policy in the policy list and add the following statement to the bottom
+4. Click on the "Permissions" tab, then select the "ide-password" policy in the policy list and click "Edit policy".
+5. Click on the "JSON" tab and add the following statement to the `Statement` array (after the existing statements):
 
 ```json
 {
@@ -50,4 +53,4 @@ This needs to be done by hand unfortunately.
 }
 ```
 
-5. Click the "Next" and "Save" buttons to continue. Ignore the warning because we're using a demo workshop.
+6. Click the "Next" and "Save changes" buttons to continue. You can ignore any warnings since this is a demo workshop.

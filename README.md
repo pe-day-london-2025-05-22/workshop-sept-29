@@ -1,7 +1,7 @@
 # Welcome to the September 29 AWS Platform Engineering Workshop
 
 1. Set up your AWS Workshop Studio environment
-2. Go to <https://console.humanitec.dev> and register for an account and free org
+2. Go to <https://console.humanitec.dev> and register for an account and free org using your Google account
 3. Enter the hosted VSCode IDE
 4. Clone the workshop GitHub repo inside the IDE `git clone https://github.com/pe-workshops/workshop-sept-29.git` and follow the README's from within that directory.
 
@@ -13,7 +13,7 @@ Prerequisites:
 
 ## Structure
 
-All of these parts should be completed from inside the Workshop Studio IDE other than web browser activities.
+All of these parts should be completed from inside the Workshop Studio IDE other than web browser activities. Make sure you've cloned this repository and are working inside the `workshop-sept-29` directory.
 
 ### Part 0
 
@@ -42,3 +42,5 @@ You need that Humanitec organization that you signed up for here.
 ### Cleanup
 
 The `cleanup.sh` script can be used to undo parts 1, 2, 3, 4 and return your Humanitec org to a clean state.
+
+**Note:** This script does not clean up Part 0 infrastructure (EKS addons and ingress controller) as that is typically managed by the workshop environment itself.

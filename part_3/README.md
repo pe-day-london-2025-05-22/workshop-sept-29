@@ -22,6 +22,8 @@ terraform init
 terraform apply
 ```
 
+**Success indicator:** Terraform should complete successfully, creating the aws-iam-role resource type and associated module.
+
 However we now need to update our k8s-service-account module so that it also coprovisions the IAM role.
 
 ```sh
@@ -99,25 +101,27 @@ And we can deploy the Score file which contains the added Dynamo DB table:
 hctl score deploy workshop prod ./score2.yaml
 ```
 
+**Success indicator:** The deployment should complete successfully and you should be able to see a DynamoDB table in the resource graph in the console.
+
 ## Passing through the Bedrock model name
 
 For our AWS_BEDROCK_MODEL_NAME name we're going to create a model from scratch. On the surface this is simply a string configuration value, but it has a complication: Our deployed app needs runtime permissions to invoke the model so the module needs to identify the existing IAM role and add a policy for it.
 
-Unfortunately, for now, AWS model access needs to be granted manually in the AWS Console. So do the following steps.
+Unfortunately, for now, AWS model access needs to be granted manually in the AWS Console. Follow these steps:
 
 1. Follow the Workshop link to sign in to the AWS Console
-2. Enter "AWS Bedrock" in the top search bar and navigate to it
+2. Enter "AWS Bedrock" in the top search bar and navigate to it  
 3. In the left hand menu, go to "Model Access" near the bottom
-4. Now "Modify Model Access"
+4. Click "Modify Model Access"
 5. Select both Amazon Titan Text G1 Lite and Express
-6. "Next"
-7. "Submit"
+6. Click "Next"
+7. Click "Submit"
 
 We'll need a new resource type:
 
 ```sh
 hctl create resource-type bedrock-model --set-yaml=- <<"EOF"
-description: "A name of the AWS Bedrock model the the app can consume"
+description: "A name of the AWS Bedrock model that the app can consume"
 output_schema:
   type: object
   required:
@@ -182,6 +186,12 @@ And a rule to go with it for our project:
 hctl create module-rule --set=module_id=bedrock-text-model --set=project_id=workshop
 ```
 
-And now we can deploy the third varient of our Score file which includes the model name.
+And now we can deploy the third variant of our Score file which includes the model name:
+
+```sh
+hctl score deploy workshop prod ./score3.yaml
+```
+
+**Success indicator:** The deployment should complete successfully and the application should now have access to both DynamoDB and Bedrock services.
 
 We can now use the "Generate" button in the UI!
