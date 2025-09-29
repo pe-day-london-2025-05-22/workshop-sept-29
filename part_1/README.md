@@ -12,17 +12,17 @@ Part 1 introduces the Humanitec Platform Orchestrator and guides you through con
     rm hctl_*.tar.gz
     ```
 
-3. Authenticate the CLI with your humctl account
+3. Authenticate the CLI with your humctl account and set your Humanitec org id in the local configuration
 
     ```sh
     hctl login
-    hctl config set-org ...
+    hctl config set-org <your org id>
     ```
 
-4. Setup terraform variables for Humanitec
+4. Setup terraform variable for your Humanitec org
 
     ```sh
-    export TF_VAR_humanitec_org_id=...
+    export TF_VAR_humanitec_org_id=<your org id>
     ```
 
 5. Run the terraform to set up the runner that allows Humanitec to execute Terraform on the EKS cluster
