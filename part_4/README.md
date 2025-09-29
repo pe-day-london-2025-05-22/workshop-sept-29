@@ -12,6 +12,8 @@ hctl create environment workshop ephemeral-dev --set=env_type_id=development
 hctl deploy workshop ephemeral-dev environment://prod
 ```
 
+**Success indicator:** You should see a new environment appear in the console with its own copy of all resources, including a new DynamoDB table and IAM roles.
+
 The `environment://prod` syntax is deploying the latest deployment state from the `prod` environment to our new `ephemeral-dev` environment.
 
 This is doing everything again that we did for prod: a new K8s namespace, new IAM service account, new DynamoDB table, and new IAM policies.

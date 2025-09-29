@@ -12,12 +12,14 @@ Part 1 introduces the Humanitec Platform Orchestrator and guides you through con
     rm hctl_*.tar.gz
     ```
 
-3. Authenticate the CLI with your humctl account and set your Humanitec org id in the local configuration
+3. Authenticate the CLI with your hctl account and set your Humanitec org id in the local configuration
 
     ```sh
     hctl login
     hctl config set-org <your org id>
     ```
+    
+    **Note:** You can find your org id in the Humanitec console URL after logging in: `https://console.humanitec.dev/orgs/<your-org-id>/`
 
 4. Setup terraform variable for your Humanitec org
 
@@ -33,6 +35,8 @@ Part 1 introduces the Humanitec Platform Orchestrator and guides you through con
     terraform init
     terraform apply
     ```
+    
+    **Success indicator:** You should see terraform outputs including a `runner_url` that you can visit to verify the runner is configured.
 
 6. Testing our runner
 
