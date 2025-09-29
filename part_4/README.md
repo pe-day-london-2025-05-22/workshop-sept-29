@@ -1,19 +1,20 @@
 # Part 4 - Multiple environments
 
-So far we've deployed a single environment and shown that it can autonomously provision a variety of AWS infrastructure and deploy our application.
+So far we've deployed a single production environment and shown that it can autonomously provision a variety of AWS infrastructure and deploy our application.
 
 But to show the true scalability of this platform we've setup, we need to show cloning, promoting, and other environment lifecycles.
 
-To start with, let's create a new copy of the dev environment:
+To start with, let's create a new copy of the production environment for iterative development:
 
 ```sh
+hctl create environment-type development
 hctl create environment workshop ephemeral-dev --set=env_type_id=development
-hctl deploy workshop ephemeral-dev environment://dev
+hctl deploy workshop ephemeral-dev environment://prod
 ```
 
-The `environment://dev` syntax is deploying the latest deployment state from the `dev` environment to our new `ephemeral-dev` environment.
+The `environment://prod` syntax is deploying the latest deployment state from the `prod` environment to our new `ephemeral-dev` environment.
 
-This is doing everything again that we did for dev: a new K8s namespace, new IAM service account, new DynamoDB table, and new IAM policies.
+This is doing everything again that we did for prod: a new K8s namespace, new IAM service account, new DynamoDB table, and new IAM policies.
 
 In the UI, we can see a new environment with it's own copy of the resource graph and different metadata.
 

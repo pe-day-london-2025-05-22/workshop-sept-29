@@ -3,7 +3,7 @@
 set -eu
 
 hctl get environment workshop ephemeral-dev && hctl delete environment workshop ephemeral-dev
-hctl get environment workshop dev && hctl delete environment workshop dev
+hctl get environment workshop prod && hctl delete environment workshop prod
 hctl get project workshop && hctl delete project workshop
 
 hctl get module bedrock-text-model && hctl delete module bedrock-text-model

@@ -31,13 +31,13 @@ hctl update module k8s-service-account --set=coprovisioned='[{"type": "aws-iam-r
 Now we can run our deploy again..
 
 ```sh
-hctl score deploy workshop dev ./score.yaml
+hctl score deploy workshop prod ./score.yaml
 ```
 
 And when we look at the resource graph in the console, we'll see an IAM role associated. We can also see this in the graph nodes output:
 
 ```sh
-hctl get active-resource-nodes workshop dev --out json | jq '.[] | select(.resource_type == "aws-iam-role")'
+hctl get active-resource-nodes workshop prod --out json | jq '.[] | select(.resource_type == "aws-iam-role")'
 ```
 
 ## Provisioning the Dynamo DB
@@ -96,7 +96,7 @@ hctl create module-rule --set=module_id=new-dynamodb-table --set=project_id=work
 And we can deploy the Score file which contains the added Dynamo DB table:
 
 ```sh
-hctl score deploy workshop dev ./score2.yaml
+hctl score deploy workshop prod ./score2.yaml
 ```
 
 ## Passing through the Bedrock model name
@@ -149,7 +149,7 @@ module_source_code: |
     type        = list(string)
   }
   locals {
-    model_name = var.env_type_id == "development" ? "amazon.titan-text-lite-v1" : "amazon.titan-text-express-v1"
+    model_name = var.env_type_id == "production" ? "amazon.titan-text-express-v1" : "amazon.titan-text-lite-v1"
   }
   resource "aws_iam_role_policy_attachment" "dynamodb_access" {
     count      = length(var.allowed_role_names)

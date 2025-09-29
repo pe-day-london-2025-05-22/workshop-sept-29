@@ -17,16 +17,16 @@ terraform apply
 Let's look at what resources are available:
 
 ```sh
-hctl get available-resource-types workshop dev --out yaml
+hctl get available-resource-types workshop prod --out yaml
 ```
 
 And finally deploy our score file.
 
 ```sh
-hctl score deploy workshop dev ./score.yaml
+hctl score deploy workshop prod ./score.yaml
 ```
 
-Hopefully, the deployment completed without errors. We can now go an look at our environment resource graph in <https://console.humanitec.dev>. Look at Projects > workshop > dev and click on the various resource nodes. Notice how even though the Score workload did not request any resources explicitly, some were linked into the resource graph as automatical dependencies.
+Hopefully, the deployment completed without errors. We can now go an look at our environment resource graph in <https://console.humanitec.dev>. Look at Projects > workshop > prod and click on the various resource nodes. Notice how even though the Score workload did not request any resources explicitly, some were linked into the resource graph as automatical dependencies.
 
 Let's look now at how we as developers request resources and we fulfill those with modules. In this case, let's request a DNS name to expose the application to our public network (the internet).
 
