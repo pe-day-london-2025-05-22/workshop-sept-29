@@ -28,7 +28,7 @@ This needs to be done by hand unfortunately.
 
 1. In the Workshop Studio, follow the link to "Open AWS console".
 2. In the search bar, enter "Roles" and navigate to the IAM Roles page.
-3. In the Roles search bar, enter "ideStack" and click on the EKS Workshop IDE Role (should be named something like `ideStackXXXXX-ideRole-XXXXX`).
+3. In the Roles search bar, enter "ideStack" and click on the EKS Workshop IDE Role.
 4. Click on the "Permissions" tab, then select the "ide-password" policy in the policy list and click "Edit policy".
 5. Click on the "JSON" tab and add the following statement to the `Statement` array (after the existing statements):
 

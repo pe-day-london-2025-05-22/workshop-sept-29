@@ -19,7 +19,7 @@ Part 1 introduces the Humanitec Platform Orchestrator and guides you through con
     hctl config set-org <your org id>
     ```
     
-    **Note:** You can find your org id in the Humanitec console URL after logging in: `https://console.humanitec.dev/orgs/<your-org-id>/`
+    **Note:** You can also find your org id in the Humanitec console URL after logging in: `https://console.humanitec.dev/orgs/<your-org-id>/`
 
 4. Setup terraform variable for your Humanitec org
 
