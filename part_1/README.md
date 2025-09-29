@@ -2,7 +2,7 @@
 
 Part 1 introduces the Humanitec Platform Orchestrator and guides you through connecting it to your workshop Kubernetes cluster.
 
-1. Go to <https://console.humanitec.dev> and register for an account and free org
+1. Go to <https://console.humanitec.dev> and register for an org using your Google/Gmail account
 2. Setup the hctl CLI <https://developer.humanitec.com/platform-orchestrator/docs/integrations/cli/>
 
     ```sh
